@@ -1,0 +1,190 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f7f7fb;
+  color: #1a1a2e;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+button {
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-page,
+.onboarding-page,
+.dashboard-page,
+.statistics-page {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.auth-page form,
+.onboarding-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.error {
+  color: #d63031;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-header__widgets {
+  display: flex;
+  gap: 1rem;
+}
+
+.widget {
+  background: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.task-card {
+  background: white;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-card--overdue {
+  border-left: 4px solid #d63031;
+}
+
+.task-card__main {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.task-card__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.task-card__meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  background: #eee;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.gesture-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.gesture-card {
+  background: #f1f1f9;
+  color: #1a1a2e;
+  border: 2px solid transparent;
+  text-align: left;
+}
+
+.gesture-card--selected {
+  border-color: #6c5ce7;
+  background: #ece9ff;
+}
+
+.stats-bar {
+  margin-bottom: 1rem;
+}
+
+.stats-bar__label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.stats-bar__track {
+  background: #eee;
+  border-radius: 10px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.stats-bar__fill {
+  background: #6c5ce7;
+  height: 100%;
+}
+
+.stats-summary {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
