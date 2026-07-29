@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // Селектор сім'ї (пігулка + дропдаун перемикання) та вибір поточного
 // учасника («Ви як»), як у дизайні.
@@ -11,6 +12,7 @@ export default function HouseholdBar({
   onOpenCreate,
   onSelectMember,
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   function pick(id) {
@@ -21,7 +23,7 @@ export default function HouseholdBar({
   return (
     <section className="household-bar">
       <div className="household-bar__row">
-        <span className="household-bar__label">Сім'я:</span>
+        <span className="household-bar__label">{t("household.family")}</span>
 
         <div className="household-select">
           <button
@@ -74,7 +76,7 @@ export default function HouseholdBar({
                     onOpenCreate?.();
                   }}
                 >
-                  ＋ Створити / приєднатися
+                  {t("household.create_or_join")}
                 </button>
               </div>
             </>
@@ -82,7 +84,7 @@ export default function HouseholdBar({
         </div>
       </div>
 
-      <p className="household-bar__label household-bar__label--block">Ви як:</p>
+      <p className="household-bar__label household-bar__label--block">{t("household.you_as")}</p>
       <div className="member-grid">
         {members.map((m) => {
           const selected = m.userId === currentUserId;

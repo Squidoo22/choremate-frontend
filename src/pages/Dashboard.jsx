@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { listTasks, createTask, completeTask, createAttentionRelay } from "../api/tasks";
 import { getHousehold, listHouseholds } from "../api/households";
 import { useAuth } from "../context/AuthContext";
@@ -10,6 +11,7 @@ import HouseholdBar from "../components/HouseholdBar";
 import HouseholdModal from "../components/HouseholdModal";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const [householdId, setHouseholdId] = useState(() =>
@@ -85,14 +87,14 @@ export default function Dashboard() {
           onSelectMember={setSelectedUserId}
         />
         <div className="dashboard-header__widgets">
-          <span className="widget">⭐ {me?.points ?? 0} балів</span>
-          <span className="widget">🔥 {me?.streakCount ?? 0} днів поспіль</span>
+          <span className="widget">{t("dashboard.points", { count: me?.points ?? 0 })}</span>
+          <span className="widget">{t("dashboard.streak", { count: me?.streakCount ?? 0 })}</span>
         </div>
-        <Link to="/statistics">Статистика →</Link>
+        <Link to="/statistics">{t("dashboard.statistics")}</Link>
       </header>
 
       <button className="add-task-btn" onClick={() => setShowForm(true)}>
-        + Нова задача
+        {t("dashboard.add_task")}
       </button>
 
       <div className="task-list">
@@ -104,7 +106,7 @@ export default function Dashboard() {
             onOverdueClick={setRelayTask}
           />
         ))}
-        {tasks.length === 0 && <p>Задач поки немає — додайте першу!</p>}
+        {tasks.length === 0 && <p>{t("dashboard.empty")}</p>}
       </div>
 
       {showForm && (

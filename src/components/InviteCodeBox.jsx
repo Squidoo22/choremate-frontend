@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function InviteCodeBox({ inviteLink }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -11,10 +13,10 @@ export default function InviteCodeBox({ inviteLink }) {
 
   return (
     <div className="invite-code-box">
-      <p>Запросіть партнера цим посиланням:</p>
+      <p>{t("onboarding.invite_hint")}</p>
       <div className="invite-link-row">
         <code>{inviteLink}</code>
-        <button onClick={handleCopy}>{copied ? "Скопійовано ✓" : "Копіювати посилання"}</button>
+        <button onClick={handleCopy}>{copied ? t("onboarding.copied") : t("onboarding.copy")}</button>
       </div>
     </div>
   );

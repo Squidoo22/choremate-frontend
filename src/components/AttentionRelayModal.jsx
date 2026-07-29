@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const GESTURE_TEMPLATES = [
-  { value: "coffee", label: "☕ Приготувати каву" },
-  { value: "dinner", label: "🍽️ Приготувати вечерю" },
-  { value: "movie_choice", label: "🎬 Вибрати фільм партнеру" },
-  { value: "next_chore", label: "🧹 Взяти на себе наступну справу" },
+  { value: "coffee", key: "relay.gesture_coffee" },
+  { value: "dinner", key: "relay.gesture_dinner" },
+  { value: "movie_choice", key: "relay.gesture_movie" },
+  { value: "next_chore", key: "relay.gesture_chore" },
 ];
 
 export default function AttentionRelayModal({ task, partnerId, onSubmit, onClose }) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState(null);
   const [customText, setCustomText] = useState("");
 
@@ -24,11 +26,8 @@ export default function AttentionRelayModal({ task, partnerId, onSubmit, onClose
   return (
     <div className="modal-backdrop">
       <div className="modal attention-relay-modal">
-        <h2>Естафета уваги</h2>
-        <p>
-          Задачу «{task.title}» не виконано вчасно. Оберіть приємний жест для партнера замість
-          цього — без негативу, просто компенсація 🙂
-        </p>
+        <h2>{t("relay.title")}</h2>
+        <p>{t("relay.description", { title: task.title })}</p>
 
         <div className="gesture-grid">
           {GESTURE_TEMPLATES.map((g) => (
@@ -38,7 +37,7 @@ export default function AttentionRelayModal({ task, partnerId, onSubmit, onClose
               onClick={() => setSelected(g.value)}
               type="button"
             >
-              {g.label}
+              {t(g.key)}
             </button>
           ))}
           <button
@@ -46,14 +45,14 @@ export default function AttentionRelayModal({ task, partnerId, onSubmit, onClose
             onClick={() => setSelected("custom")}
             type="button"
           >
-            ✏️ Своя ідея
+            {t("relay.gesture_custom")}
           </button>
         </div>
 
         {selected === "custom" && (
           <input
             type="text"
-            placeholder="Опишіть свою ідею"
+            placeholder={t("relay.custom_placeholder")}
             value={customText}
             onChange={(e) => setCustomText(e.target.value)}
           />
@@ -61,10 +60,10 @@ export default function AttentionRelayModal({ task, partnerId, onSubmit, onClose
 
         <div className="modal__actions">
           <button type="button" onClick={onClose}>
-            Скасувати
+            {t("relay.cancel")}
           </button>
           <button type="button" onClick={handleSend} disabled={!selected}>
-            Надіслати
+            {t("relay.send")}
           </button>
         </div>
       </div>

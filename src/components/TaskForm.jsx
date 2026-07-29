@@ -1,16 +1,25 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
-const CATEGORIES = ["Домашні справи", "Покупки", "Оплата рахунків", "Догляд за твариною", "Інше"];
+const CATEGORY_KEYS = [
+  "task.cat_home",
+  "task.cat_shopping",
+  "task.cat_bills",
+  "task.cat_pet",
+  "task.cat_other",
+];
 const RECURRENCE_OPTIONS = [
-  { value: "NONE", label: "Одноразово" },
-  { value: "DAILY", label: "Щодня" },
-  { value: "WEEKLY", label: "Щотижня" },
-  { value: "MONTHLY", label: "Щомісяця" },
+  { value: "NONE", key: "task.rec_none" },
+  { value: "DAILY", key: "task.rec_daily" },
+  { value: "WEEKLY", key: "task.rec_weekly" },
+  { value: "MONTHLY", key: "task.rec_monthly" },
 ];
 
 export default function TaskForm({ members, onSubmit, onClose }) {
+  const { t } = useTranslation();
+  const categories = CATEGORY_KEYS.map((k) => t(k));
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState(CATEGORIES[0]);
+  const [category, setCategory] = useState(categories[0]);
   const [dueDate, setDueDate] = useState("");
   const [recurrence, setRecurrence] = useState("NONE");
   const [assigneeId, setAssigneeId] = useState("");
@@ -29,18 +38,18 @@ export default function TaskForm({ members, onSubmit, onClose }) {
   return (
     <div className="modal-backdrop">
       <form className="modal task-form" onSubmit={handleSubmit}>
-        <h2>Нова задача</h2>
+        <h2>{t("task.new_title")}</h2>
 
         <input
           type="text"
-          placeholder="Наприклад: винести сміття"
+          placeholder={t("task.title_placeholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
 
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
@@ -57,13 +66,13 @@ export default function TaskForm({ members, onSubmit, onClose }) {
         <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
           {RECURRENCE_OPTIONS.map((r) => (
             <option key={r.value} value={r.value}>
-              {r.label}
+              {t(r.key)}
             </option>
           ))}
         </select>
 
         <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
-          <option value="">Будь-хто</option>
+          <option value="">{t("task.anyone")}</option>
           {members?.map((m) => (
             <option key={m.userId} value={m.userId}>
               {m.user?.name || m.name}
@@ -73,9 +82,9 @@ export default function TaskForm({ members, onSubmit, onClose }) {
 
         <div className="modal__actions">
           <button type="button" onClick={onClose}>
-            Скасувати
+            {t("task.cancel")}
           </button>
-          <button type="submit">Створити</button>
+          <button type="submit">{t("task.create")}</button>
         </div>
       </form>
     </div>

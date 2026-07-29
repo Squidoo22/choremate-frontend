@@ -1,6 +1,7 @@
 // In-memory сховище мокових даних.
 // Живе на час сесії (до перезавантаження сторінки) і мутується
 // моковими API-функціями, щоб UI поводився як з реальним бекендом.
+import { TEST_CREDENTIALS } from "../config";
 
 function daysFromNow(days, hour = 20) {
   const d = new Date();
@@ -133,6 +134,23 @@ export let tasks = [
     assignee: { name: "Марко" },
   },
 ];
+
+// Акаунти, з якими можна увійти (email + пароль).
+// Сюди входить тестовий акаунт, демо та Google-вхід; реєстрація додає нові.
+export let authUsers = [
+  { email: TEST_CREDENTIALS.email, password: TEST_CREDENTIALS.password, user: currentUser },
+  { email: "demo@example.com", password: "demodemo", user: currentUser },
+  { email: "google@example.com", password: "google", user: currentUser },
+];
+
+export function findAuthUser(email, password) {
+  const e = (email || "").trim().toLowerCase();
+  return authUsers.find((u) => u.email === e && u.password === password);
+}
+
+export function addAuthUser(email, password, user) {
+  authUsers = [...authUsers, { email: (email || "").trim().toLowerCase(), password, user }];
+}
 
 let idCounter = tasks.length;
 

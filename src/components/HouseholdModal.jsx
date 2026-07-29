@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createHousehold, joinHousehold } from "../api/households";
 
 // Модалка створення нової сім'ї або приєднання за кодом.
 // Після успіху повертає створену/приєднану сім'ю через onDone.
 export default function HouseholdModal({ onDone, onClose }) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -18,7 +20,7 @@ export default function HouseholdModal({ onDone, onClose }) {
       const { data } = await createHousehold(name.trim());
       onDone(data.household);
     } catch (err) {
-      setError(err.response?.data?.error || "Не вдалося створити сім'ю");
+      setError(err.response?.data?.error || t("household.err_create"));
       setBusy(false);
     }
   }
@@ -32,7 +34,7 @@ export default function HouseholdModal({ onDone, onClose }) {
       const { data } = await joinHousehold(inviteCode.trim());
       onDone(data.household);
     } catch (err) {
-      setError(err.response?.data?.error || "Не вдалося приєднатися");
+      setError(err.response?.data?.error || t("household.err_join"));
       setBusy(false);
     }
   }
@@ -41,39 +43,39 @@ export default function HouseholdModal({ onDone, onClose }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal household-modal" onClick={(e) => e.stopPropagation()}>
         <div className="household-modal__head">
-          <h2>Створити або приєднатися</h2>
-          <button type="button" className="icon-btn" onClick={onClose} aria-label="Закрити">
+          <h2>{t("household.modal_title")}</h2>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label={t("household.close")}>
             ✕
           </button>
         </div>
 
         <form className="household-modal__section" onSubmit={handleCreate}>
-          <label className="field-label">Створити нову сім'ю</label>
+          <label className="field-label">{t("household.create_label")}</label>
           <input
             type="text"
-            placeholder="Назва (напр. «Наша квартира»)"
+            placeholder={t("household.create_placeholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <button type="submit" disabled={busy || !name.trim()}>
-            Створити
+            {t("household.create")}
           </button>
         </form>
 
         <div className="household-modal__divider">
-          <span>або</span>
+          <span>{t("household.or")}</span>
         </div>
 
         <form className="household-modal__section" onSubmit={handleJoin}>
-          <label className="field-label">Приєднатися за кодом</label>
+          <label className="field-label">{t("household.join_label")}</label>
           <input
             type="text"
-            placeholder="Інвайт-код"
+            placeholder={t("household.join_placeholder")}
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
           />
           <button type="submit" className="btn-secondary" disabled={busy || !inviteCode.trim()}>
-            Приєднатися
+            {t("household.join")}
           </button>
         </form>
 

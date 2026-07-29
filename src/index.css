@@ -1,3 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Сумісність: preflight вимкнено, тож відновлюємо базу для border-утиліт
+   Tailwind (інакше `border` без стилю не відображається). */
+*,
+::before,
+::after {
+  border-width: 0;
+  border-style: solid;
+}
+
 :root {
   /* Палітра з дизайну ChoreMate: тепла коралово-червона */
   --brand: #f43f5e; /* rose-500 — основний акцент */
@@ -117,6 +130,130 @@ body {
   text-transform: capitalize;
 }
 
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* --- Перемикач мови --- */
+.lang-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: #f4f4f6;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.lang-switch .lang-switch__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.55rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lang-switch .lang-switch__btn:hover:not(.is-active) {
+  background: #e9e9ee;
+  color: var(--ink);
+}
+
+.lang-switch .lang-switch__btn.is-active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.app-header__actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* --- Бейдж «Кредит довіри» біля назви --- */
+.app-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.credit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: var(--amber-bg);
+  color: var(--amber-text);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* --- Чип користувача + кнопка виходу --- */
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-chip__avatar {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f4f6;
+  font-size: 1rem;
+}
+
+.user-chip__name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.user-chip .logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #ffd9de;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-chip .logout-btn:hover:not(:disabled) {
+  background: #ffe4e6;
+}
+
+.logout-btn__icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .app-header__date {
+    display: none;
+  }
+  .user-chip__name {
+    display: none;
+  }
+  .logout-btn__label {
+    display: none;
+  }
+}
+
 .app-footer {
   background: #fff;
   color: var(--muted);
@@ -155,27 +292,29 @@ body {
   }
 }
 
-input,
-select,
-button {
+/* Легасі-стилі елементів обмежені до внутрішніх сторінок (.app-shell),
+   щоб не впливати на auth-екран, зверстаний повністю на Tailwind. */
+.app-shell input,
+.app-shell select,
+.app-shell button {
   font: inherit;
   padding: 0.6rem 0.8rem;
   border-radius: 8px;
   border: 1px solid #ddd;
 }
 
-button {
+.app-shell button {
   background: var(--brand);
   color: white;
   border: none;
   cursor: pointer;
 }
 
-button:hover:not(:disabled) {
+.app-shell button:hover:not(:disabled) {
   background: var(--brand-strong);
 }
 
-button:disabled {
+.app-shell button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

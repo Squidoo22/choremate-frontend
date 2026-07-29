@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { APP_NAME } from "../config";
 
 export default function Footer() {
+  const { t } = useTranslation();
   const year = new Date().getFullYear();
   return (
     <footer className="app-footer">
@@ -11,7 +13,7 @@ export default function Footer() {
           </span>
           {APP_NAME}
         </span>
-        <span className="app-footer__meta">© {year} · Спільні обов'язки без суперечок</span>
+        <span className="app-footer__meta">{t("footer.meta", { year })}</span>
       </div>
     </footer>
   );

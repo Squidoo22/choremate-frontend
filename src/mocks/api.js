@@ -8,6 +8,8 @@ import {
   households,
   getHouseholdById,
   addHousehold,
+  findAuthUser,
+  addAuthUser,
   tasks,
   nextId,
   setTasks,
@@ -21,22 +23,29 @@ function respond(data) {
   });
 }
 
-// --- auth ---
-export function login({ email }) {
-  // У мок-режимі одразу «прив'язуємо» користувача до готового простору,
-  // щоб після входу дашборд мав дані без проходження онбордингу.
-  localStorage.setItem("householdId", household.id);
-  return respond({
-    token: "mock-token",
-    user: { ...currentUser, email: email || currentUser.email },
+function reject(error) {
+  return new Promise((_, rej) => {
+    setTimeout(() => rej({ response: { data: { error } } }), LATENCY);
   });
 }
 
-export function register({ name, email }) {
-  return respond({
-    token: "mock-token",
-    user: { ...currentUser, name: name || currentUser.name, email },
-  });
+// --- auth ---
+export function login({ email, password }) {
+  // Справжня перевірка: email + пароль мають збігтися з відомим акаунтом.
+  const found = findAuthUser(email, password);
+  if (!found) {
+    return reject("invalid_credentials");
+  }
+  // Прив'язуємо до готового простору, щоб дашборд мав дані одразу.
+  localStorage.setItem("householdId", household.id);
+  return respond({ token: "mock-token", user: found.user });
+}
+
+export function register({ name, email, password }) {
+  const user = { ...currentUser, name: name || currentUser.name, email };
+  // Додаємо акаунт, щоб потім можна було увійти цими ж даними.
+  addAuthUser(email, password, user);
+  return respond({ token: "mock-token", user });
 }
 
 // --- households ---

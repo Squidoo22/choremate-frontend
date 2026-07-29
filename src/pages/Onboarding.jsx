@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { createHousehold, joinHousehold } from "../api/households";
 import InviteCodeBox from "../components/InviteCodeBox";
 
 export default function Onboarding() {
+  const { t } = useTranslation();
   const [mode, setMode] = useState(null); // "create" | "join"
   const [name, setName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -19,7 +21,7 @@ export default function Onboarding() {
       localStorage.setItem("householdId", data.household.id);
       setInviteLink(data.inviteLink);
     } catch (err) {
-      setError(err.response?.data?.error || "Не вдалося створити простір");
+      setError(err.response?.data?.error || t("onboarding.err_create"));
     }
   }
 
@@ -31,28 +33,28 @@ export default function Onboarding() {
       localStorage.setItem("householdId", data.household.id);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || "Не вдалося приєднатися");
+      setError(err.response?.data?.error || t("onboarding.err_join"));
     }
   }
 
   if (inviteLink) {
     return (
       <div className="onboarding-page">
-        <h1>Простір створено 🎉</h1>
+        <h1>{t("onboarding.created_title")}</h1>
         <InviteCodeBox inviteLink={inviteLink} />
-        <button onClick={() => navigate("/dashboard")}>Перейти до дашборду</button>
+        <button onClick={() => navigate("/dashboard")}>{t("onboarding.go_dashboard")}</button>
       </div>
     );
   }
 
   return (
     <div className="onboarding-page">
-      <h1>Налаштування спільного простору</h1>
+      <h1>{t("onboarding.title")}</h1>
 
       {!mode && (
         <div className="onboarding-choice">
-          <button onClick={() => setMode("create")}>Створити новий простір</button>
-          <button onClick={() => setMode("join")}>Приєднатися за кодом</button>
+          <button onClick={() => setMode("create")}>{t("onboarding.create_space")}</button>
+          <button onClick={() => setMode("join")}>{t("onboarding.join_space")}</button>
         </div>
       )}
 
@@ -60,13 +62,13 @@ export default function Onboarding() {
         <form onSubmit={handleCreate}>
           <input
             type="text"
-            placeholder="Назва простору (напр. 'Наша квартира')"
+            placeholder={t("onboarding.space_name_placeholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
           {error && <p className="error">{error}</p>}
-          <button type="submit">Створити</button>
+          <button type="submit">{t("onboarding.create")}</button>
         </form>
       )}
 
@@ -74,13 +76,13 @@ export default function Onboarding() {
         <form onSubmit={handleJoin}>
           <input
             type="text"
-            placeholder="Інвайт-код"
+            placeholder={t("onboarding.invite_placeholder")}
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
             required
           />
           {error && <p className="error">{error}</p>}
-          <button type="submit">Приєднатися</button>
+          <button type="submit">{t("onboarding.join")}</button>
         </form>
       )}
     </div>

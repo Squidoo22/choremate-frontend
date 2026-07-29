@@ -13,37 +13,44 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/onboarding"
-              element={
-                <RequireAuth>
+        <Routes>
+          {/* Auth-екрани — повноекранні, без хедера/футера застосунку */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Внутрішні сторінки — в обгортці Layout */}
+          <Route
+            path="/onboarding"
+            element={
+              <RequireAuth>
+                <Layout>
                   <Onboarding />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <RequireAuth>
+                </Layout>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <Layout>
                   <Dashboard />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/statistics"
-              element={
-                <RequireAuth>
+                </Layout>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/statistics"
+            element={
+              <RequireAuth>
+                <Layout>
                   <Statistics />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </Layout>
+                </Layout>
+              </RequireAuth>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
