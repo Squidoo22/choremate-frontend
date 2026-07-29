@@ -24,7 +24,7 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <h1>Увійти в Together</h1>
+      <h1>Увійти в ChoreMate</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="email"

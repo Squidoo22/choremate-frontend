@@ -1,34 +1,54 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listTasks, createTask, completeTask, createAttentionRelay } from "../api/tasks";
-import { getHousehold } from "../api/households";
+import { getHousehold, listHouseholds } from "../api/households";
 import { useAuth } from "../context/AuthContext";
 import TaskCard from "../components/TaskCard";
 import TaskForm from "../components/TaskForm";
 import AttentionRelayModal from "../components/AttentionRelayModal";
+import HouseholdBar from "../components/HouseholdBar";
+import HouseholdModal from "../components/HouseholdModal";
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const householdId = localStorage.getItem("householdId");
 
+  const [householdId, setHouseholdId] = useState(() =>
+    localStorage.getItem("householdId")
+  );
   const [tasks, setTasks] = useState([]);
   const [household, setHousehold] = useState(null);
+  const [households, setHouseholds] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [relayTask, setRelayTask] = useState(null);
+  const [showHouseholdModal, setShowHouseholdModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(user?.id);
 
   async function loadData() {
     if (!householdId) return;
-    const [tasksRes, householdRes] = await Promise.all([
+    const [tasksRes, householdRes, householdsRes] = await Promise.all([
       listTasks(householdId),
       getHousehold(householdId),
+      listHouseholds(),
     ]);
     setTasks(tasksRes.data);
     setHousehold(householdRes.data);
+    setHouseholds(householdsRes.data);
   }
 
   useEffect(() => {
     loadData();
   }, [householdId]);
+
+  function switchHousehold(id) {
+    localStorage.setItem("householdId", id);
+    setHouseholdId(id);
+  }
+
+  function handleHouseholdCreated(created) {
+    setShowHouseholdModal(false);
+    setHouseholds((prev) => [...prev, created]);
+    switchHousehold(created.id);
+  }
 
   async function handleCreateTask(taskData) {
     await createTask({ ...taskData, householdId });
@@ -47,15 +67,26 @@ export default function Dashboard() {
     loadData();
   }
 
-  const partner = household?.members?.find((m) => m.userId !== user?.id);
+  const members = household?.members ?? [];
+  const currentUserId = selectedUserId ?? user?.id;
+  const me = members.find((m) => m.userId === currentUserId)?.user || user;
+  const partner = members.find((m) => m.userId !== currentUserId);
 
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
-        <h1>{household?.name || "Наш простір"}</h1>
+        <HouseholdBar
+          household={household}
+          households={households}
+          members={members}
+          currentUserId={currentUserId}
+          onSelectHousehold={switchHousehold}
+          onOpenCreate={() => setShowHouseholdModal(true)}
+          onSelectMember={setSelectedUserId}
+        />
         <div className="dashboard-header__widgets">
-          <span className="widget">⭐ {user?.points ?? 0} балів</span>
-          <span className="widget">🔥 {user?.streakCount ?? 0} днів поспіль</span>
+          <span className="widget">⭐ {me?.points ?? 0} балів</span>
+          <span className="widget">🔥 {me?.streakCount ?? 0} днів поспіль</span>
         </div>
         <Link to="/statistics">Статистика →</Link>
       </header>
@@ -81,6 +112,13 @@ export default function Dashboard() {
           members={household?.members}
           onSubmit={handleCreateTask}
           onClose={() => setShowForm(false)}
+        />
+      )}
+
+      {showHouseholdModal && (
+        <HouseholdModal
+          onDone={handleHouseholdCreated}
+          onClose={() => setShowHouseholdModal(false)}
         />
       )}
 
