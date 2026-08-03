@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ui } from "../ui";
 
 const CATEGORY_KEYS = [
   "task.cat_home",
@@ -36,9 +37,13 @@ export default function TaskForm({ members, onSubmit, onClose }) {
   }
 
   return (
-    <div className="modal-backdrop">
-      <form className="modal task-form" onSubmit={handleSubmit}>
-        <h2>{t("task.new_title")}</h2>
+    <div className={ui.backdrop} onClick={onClose}>
+      <form
+        onSubmit={handleSubmit}
+        onClick={(e) => e.stopPropagation()}
+        className={`${ui.card} flex flex-col gap-3`}
+      >
+        <h2 className={ui.h2}>{t("task.new_title")}</h2>
 
         <input
           type="text"
@@ -46,9 +51,10 @@ export default function TaskForm({ members, onSubmit, onClose }) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          className={ui.input}
         />
 
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className={ui.input}>
           {categories.map((c) => (
             <option key={c} value={c}>
               {c}
@@ -61,9 +67,14 @@ export default function TaskForm({ members, onSubmit, onClose }) {
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           required
+          className={ui.input}
         />
 
-        <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
+        <select
+          value={recurrence}
+          onChange={(e) => setRecurrence(e.target.value)}
+          className={ui.input}
+        >
           {RECURRENCE_OPTIONS.map((r) => (
             <option key={r.value} value={r.value}>
               {t(r.key)}
@@ -71,7 +82,11 @@ export default function TaskForm({ members, onSubmit, onClose }) {
           ))}
         </select>
 
-        <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+        <select
+          value={assigneeId}
+          onChange={(e) => setAssigneeId(e.target.value)}
+          className={ui.input}
+        >
           <option value="">{t("task.anyone")}</option>
           {members?.map((m) => (
             <option key={m.userId} value={m.userId}>
@@ -80,11 +95,13 @@ export default function TaskForm({ members, onSubmit, onClose }) {
           ))}
         </select>
 
-        <div className="modal__actions">
-          <button type="button" onClick={onClose}>
+        <div className="flex justify-end gap-2 mt-1">
+          <button type="button" onClick={onClose} className={ui.btnGhost}>
             {t("task.cancel")}
           </button>
-          <button type="submit">{t("task.create")}</button>
+          <button type="submit" className={ui.btnPrimary}>
+            {t("task.create")}
+          </button>
         </div>
       </form>
     </div>

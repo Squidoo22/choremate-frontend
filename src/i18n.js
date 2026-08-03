@@ -59,6 +59,7 @@ const resources = {
 
       dashboard: {
         add_task: "+ Нова задача",
+        add_task_short: "Нова задача",
         statistics: "Статистика →",
         points_one: "⭐ {{count}} бал",
         points_few: "⭐ {{count}} бали",
@@ -67,12 +68,19 @@ const resources = {
         streak_few: "🔥 {{count}} дні поспіль",
         streak_many: "🔥 {{count}} днів поспіль",
         empty: "Задач поки немає — додайте першу!",
+        empty_filtered: "Немає задач за цим фільтром",
+        search_placeholder: "Пошук завдань за назвою...",
+        filter_active: "Активні",
+        filter_overdue: "Прострочені",
+        filter_done: "Виконані",
+        filter_all: "Всі задачі",
       },
 
       household: {
         family: "Сім'я:",
         you_as: "Ви як:",
         create_or_join: "＋ Створити / приєднатися",
+        create_or_join_short: "Створити / приєднатися",
         modal_title: "Створити або приєднатися",
         create_label: "Створити нову сім'ю",
         create_placeholder: "Назва (напр. «Наша квартира»)",
@@ -132,7 +140,7 @@ const resources = {
         err_join: "Не вдалося приєднатися",
         invite_hint: "Запросіть партнера цим посиланням:",
         copy: "Копіювати посилання",
-        copied: "Скопійовано ✓",
+        copied: "Скопійовано",
       },
 
       relay: {
@@ -207,18 +215,26 @@ const resources = {
 
       dashboard: {
         add_task: "+ New task",
+        add_task_short: "New task",
         statistics: "Statistics →",
         points_one: "⭐ {{count}} point",
         points_other: "⭐ {{count}} points",
         streak_one: "🔥 {{count}}-day streak",
         streak_other: "🔥 {{count}}-day streak",
         empty: "No tasks yet — add your first one!",
+        empty_filtered: "No tasks match this filter",
+        search_placeholder: "Search tasks by name...",
+        filter_active: "Active",
+        filter_overdue: "Overdue",
+        filter_done: "Done",
+        filter_all: "All tasks",
       },
 
       household: {
         family: "Family:",
         you_as: "You as:",
         create_or_join: "＋ Create / join",
+        create_or_join_short: "Create / join",
         modal_title: "Create or join",
         create_label: "Create a new family",
         create_placeholder: 'Name (e.g. "Our apartment")',
@@ -278,7 +294,7 @@ const resources = {
         err_join: "Could not join",
         invite_hint: "Invite your partner with this link:",
         copy: "Copy link",
-        copied: "Copied ✓",
+        copied: "Copied",
       },
 
       relay: {

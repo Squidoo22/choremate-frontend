@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getStatistics } from "../api/households";
+import { useHousehold } from "../context/HouseholdContext";
 import StatsBar from "../components/StatsBar";
 
 export default function Statistics() {
   const { t } = useTranslation();
-  const householdId = localStorage.getItem("householdId");
+  const { householdId } = useHousehold();
   const [stats, setStats] = useState(null);
 
   useEffect(() => {

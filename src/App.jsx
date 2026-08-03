@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { HouseholdProvider } from "./context/HouseholdContext";
 import { RequireAuth } from "./router";
 import Layout from "./components/Layout";
 
@@ -13,7 +14,8 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
+        <HouseholdProvider>
+          <Routes>
           {/* Auth-екрани — повноекранні, без хедера/футера застосунку */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
@@ -50,7 +52,8 @@ export default function App() {
               </RequireAuth>
             }
           />
-        </Routes>
+          </Routes>
+        </HouseholdProvider>
       </BrowserRouter>
     </AuthProvider>
   );

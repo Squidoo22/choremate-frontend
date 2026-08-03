@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { APP_NAME } from "../config";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
+import HouseholdSelect from "./HouseholdSelect";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -45,6 +46,7 @@ export default function Header() {
         </div>
 
         <div className="app-header__actions">
+          <HouseholdSelect />
           <time className="app-header__date">{today}</time>
           <LanguageSwitcher />
           {user && (
