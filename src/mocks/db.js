@@ -1,6 +1,3 @@
-// In-memory сховище мокових даних.
-// Живе на час сесії (до перезавантаження сторінки) і мутується
-// моковими API-функціями, щоб UI поводився як з реальним бекендом.
 import { TEST_CREDENTIALS } from "../config";
 
 function daysFromNow(days, hour = 20) {
@@ -10,14 +7,12 @@ function daysFromNow(days, hour = 20) {
   return d.toISOString();
 }
 
-// Учасники сім'ї (як у дизайні): аватар-емодзі, бали, серія днів.
 export const familyMembers = [
   { userId: "user-1", name: "Марко", avatar: "🧑‍💻", email: "marko@example.com", points: 320, streakCount: 5 },
   { userId: "user-2", name: "Софія", avatar: "👩‍🎨", email: "sofia@example.com", points: 280, streakCount: 3 },
   { userId: "user-3", name: "Денис", avatar: "🧢", email: "denys@example.com", points: 210, streakCount: 2 },
 ];
 
-// «Ви» за замовчуванням — перший учасник.
 export const currentUser = {
   id: familyMembers[0].userId,
   name: familyMembers[0].name,
@@ -36,7 +31,6 @@ function toMembers(members) {
   }));
 }
 
-// Сім'ї, до яких належить користувач (для дропдауна-перемикача).
 export let households = [
   {
     id: "hh-4",
@@ -52,7 +46,6 @@ export let households = [
   },
 ];
 
-// Активна сім'я за замовчуванням — перша.
 export const household = households[0];
 
 export function getHouseholdById(id) {
@@ -71,7 +64,6 @@ export function addHousehold(name, emoji = "🏠") {
 }
 
 export let tasks = [
-  // --- Затишна Квартира #4 (hh-4) ---
   {
     id: "task-1",
     householdId: "hh-4",
@@ -112,7 +104,6 @@ export let tasks = [
     status: "DONE",
     assignee: { name: "Марко" },
   },
-  // --- Дім на морі (hh-sea) ---
   {
     id: "task-5",
     householdId: "hh-sea",
@@ -135,8 +126,121 @@ export let tasks = [
   },
 ];
 
-// Акаунти, з якими можна увійти (email + пароль).
-// Сюди входить тестовий акаунт, демо та Google-вхід; реєстрація додає нові.
+export let trustDebts = [
+  {
+    id: "debt-1",
+    householdId: "hh-4",
+    debtorId: "user-3",
+    creditorId: "user-1",
+    taskTitle: "Оплатити комуналку",
+    description: "🍳 Готує святкову романтичну вечерю",
+    category: "cooking",
+    createdAt: daysFromNow(-3, 9),
+    isResolved: false,
+  },
+  {
+    id: "debt-2",
+    householdId: "hh-4",
+    debtorId: "user-3",
+    creditorId: "user-2",
+    description: "☕ Робить каву в ліжко в суботу вранці",
+    category: "coffee",
+    createdAt: daysFromNow(-1, 14),
+    isResolved: false,
+  },
+  {
+    id: "debt-3",
+    householdId: "hh-4",
+    debtorId: "user-2",
+    creditorId: "user-1",
+    description: "🎬 Вибирає фільм на кіновечір не сперечаючись",
+    category: "movie",
+    createdAt: daysFromNow(-6, 20),
+    resolvedAt: daysFromNow(-5, 22),
+    isResolved: true,
+  },
+];
+
+export function listTrustDebtsFor(householdId) {
+  return trustDebts.filter((d) => d.householdId === householdId);
+}
+
+export function addTrustDebt(debt) {
+  const d = {
+    id: nextId("debt"),
+    createdAt: new Date().toISOString(),
+    isResolved: false,
+    ...debt,
+  };
+  trustDebts = [d, ...trustDebts];
+  return d;
+}
+
+export function resolveTrustDebt(id) {
+  trustDebts = trustDebts.map((d) =>
+    d.id === id ? { ...d, isResolved: true, resolvedAt: new Date().toISOString() } : d
+  );
+}
+
+export function removeTrustDebt(id) {
+  trustDebts = trustDebts.filter((d) => d.id !== id);
+}
+
+export let wishlist = [
+  {
+    id: "wish-1",
+    householdId: "hh-4",
+    title: "Романтичний пікнік у парку 🧺",
+    description: "Взяти плед, фрукти, сир та лимонад",
+    creatorId: "user-1",
+    points: 50,
+    status: "PENDING",
+    createdAt: daysFromNow(-5, 18),
+  },
+  {
+    id: "wish-2",
+    householdId: "hh-4",
+    title: "Настільна гра Catan 🎲",
+    description: "Купити доповнення для вечорів із друзями",
+    creatorId: "user-2",
+    points: 20,
+    status: "PENDING",
+    createdAt: daysFromNow(-3, 11),
+  },
+  {
+    id: "wish-3",
+    householdId: "hh-sea",
+    title: "Захід сонця на пірсі 🌅",
+    description: "Взяти каву й подивитись захід разом",
+    creatorId: "user-1",
+    points: 30,
+    status: "PENDING",
+    createdAt: daysFromNow(-2, 20),
+  },
+];
+
+export function listWishlistFor(householdId) {
+  return wishlist.filter((w) => w.householdId === householdId);
+}
+
+export function addWishlist(item) {
+  const w = {
+    id: nextId("wish"),
+    status: "PENDING",
+    points: 20,
+    createdAt: new Date().toISOString(),
+    ...item,
+  };
+  wishlist = [w, ...wishlist];
+  return w;
+}
+
+export function toggleWishlist(id) {
+  wishlist = wishlist.map((w) =>
+    w.id === id ? { ...w, status: w.status === "DONE" ? "PENDING" : "DONE" } : w
+  );
+}
+
 export let authUsers = [
   { email: TEST_CREDENTIALS.email, password: TEST_CREDENTIALS.password, user: currentUser },
   { email: "demo@example.com", password: "demodemo", user: currentUser },

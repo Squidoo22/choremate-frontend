@@ -1,7 +1,3 @@
-// Мокові реалізації API-функцій.
-// Повертають той самий формат, що й axios ({ data }), із невеликою
-// затримкою — щоб імітувати мережу. Коли з'явиться реальний бекенд,
-// достатньо вимкнути VITE_USE_MOCKS, ці функції не викликатимуться.
 import {
   currentUser,
   household,
@@ -13,6 +9,13 @@ import {
   tasks,
   nextId,
   setTasks,
+  listTrustDebtsFor,
+  addTrustDebt,
+  resolveTrustDebt,
+  removeTrustDebt,
+  listWishlistFor,
+  addWishlist,
+  toggleWishlist,
 } from "./db";
 
 const LATENCY = 300;
@@ -29,26 +32,21 @@ function reject(error) {
   });
 }
 
-// --- auth ---
 export function login({ email, password }) {
-  // Справжня перевірка: email + пароль мають збігтися з відомим акаунтом.
   const found = findAuthUser(email, password);
   if (!found) {
     return reject("invalid_credentials");
   }
-  // Прив'язуємо до готового простору, щоб дашборд мав дані одразу.
   localStorage.setItem("householdId", household.id);
   return respond({ token: "mock-token", user: found.user });
 }
 
 export function register({ name, email, password }) {
   const user = { ...currentUser, name: name || currentUser.name, email };
-  // Додаємо акаунт, щоб потім можна було увійти цими ж даними.
   addAuthUser(email, password, user);
   return respond({ token: "mock-token", user });
 }
 
-// --- households ---
 export function listHouseholds() {
   return respond([...households]);
 }
@@ -62,7 +60,6 @@ export function createHousehold(name) {
 }
 
 export function joinHousehold(inviteCode) {
-  // Мок: «приєднання» просто створює сім'ю з назвою за кодом.
   const joined = addHousehold(`Сім'я ${inviteCode || ""}`.trim(), "👋");
   return respond({ household: joined });
 }
@@ -78,7 +75,6 @@ export function getStatistics(householdId) {
   const totalDone = hhTasks.filter((t) => t.status === "DONE").length;
   const totalOverdue = hhTasks.filter((t) => t.status === "OVERDUE").length;
 
-  // Навантаження = частка призначених задач на кожного учасника.
   const assignedByName = {};
   const doneByName = {};
   hhTasks.forEach((t) => {
@@ -103,7 +99,6 @@ export function getStatistics(householdId) {
   return respond({ perMember, totalDone, totalOverdue, mostActive });
 }
 
-// --- tasks ---
 export function listTasks(householdId) {
   return respond(tasks.filter((t) => t.householdId === householdId));
 }
@@ -134,4 +129,35 @@ export function completeTask(taskId) {
 
 export function createAttentionRelay(payload) {
   return respond({ ok: true, relay: { id: nextId("relay"), ...payload } });
+}
+
+export function listTrustDebts(householdId) {
+  return respond(listTrustDebtsFor(householdId));
+}
+
+export function createTrustDebt(debt) {
+  return respond(addTrustDebt(debt));
+}
+
+export function redeemTrustDebt(id) {
+  resolveTrustDebt(id);
+  return respond({ ok: true });
+}
+
+export function deleteTrustDebt(id) {
+  removeTrustDebt(id);
+  return respond({ ok: true });
+}
+
+export function listWishlist(householdId) {
+  return respond(listWishlistFor(householdId));
+}
+
+export function createWishlistItem(item) {
+  return respond(addWishlist(item));
+}
+
+export function toggleWishlistItem(id) {
+  toggleWishlist(id);
+  return respond({ ok: true });
 }

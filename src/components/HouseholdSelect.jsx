@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Users, ChevronDown, Plus, Check } from "lucide-react";
 import { useHousehold } from "../context/HouseholdContext";
 
-// Селектор сім'ї для хедера: пігулка + дропдаун перемикання/створення.
 export default function HouseholdSelect() {
   const { t } = useTranslation();
   const { household, households, switchHousehold, openCreate } = useHousehold();

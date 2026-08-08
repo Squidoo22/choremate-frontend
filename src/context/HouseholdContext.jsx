@@ -12,7 +12,6 @@ export function HouseholdProvider({ children }) {
   const [household, setHousehold] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
 
-  // Синхронізуємо активну сім'ю з localStorage при вході/виході.
   useEffect(() => {
     if (user) {
       setHouseholdId(localStorage.getItem("householdId"));

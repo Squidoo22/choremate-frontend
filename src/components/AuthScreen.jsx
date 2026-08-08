@@ -190,7 +190,6 @@ export default function AuthScreen({ initialMode = "login" }) {
       </div>
 
       <div className="max-w-4xl w-full bg-white rounded-3xl border border-stone-200 shadow-xl overflow-hidden grid md:grid-cols-12">
-        {/* Лівий банер (десктоп) */}
         <aside className="hidden md:flex md:col-span-5 bg-stone-900 text-white p-8 flex-col justify-between relative overflow-hidden">
           <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-rose-500/20 rounded-full blur-3xl" />
           <div className="absolute left-0 bottom-0 -translate-x-12 translate-y-12 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl" />
@@ -232,7 +231,6 @@ export default function AuthScreen({ initialMode = "login" }) {
           </div>
         </aside>
 
-        {/* Права колонка — форма */}
         <section className="md:col-span-7 p-6 sm:p-8">
           <div>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
@@ -243,7 +241,6 @@ export default function AuthScreen({ initialMode = "login" }) {
             </p>
           </div>
 
-          {/* Перемикач режимів */}
           <div className="bg-stone-100 p-1 rounded-2xl grid grid-cols-2 gap-1 mt-6 mb-6 text-xs md:text-sm font-bold">
             <button
               type="button"
@@ -265,7 +262,6 @@ export default function AuthScreen({ initialMode = "login" }) {
             </button>
           </div>
 
-          {/* Google */}
           <button
             type="button"
             onClick={handleGoogleAuth}
@@ -276,7 +272,6 @@ export default function AuthScreen({ initialMode = "login" }) {
             <span>{isLogin ? t("auth.google_login") : t("auth.google_register")}</span>
           </button>
 
-          {/* Розділювач */}
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-stone-200" />
             <span className="text-[10px] md:text-xs font-bold text-stone-400 tracking-wider">

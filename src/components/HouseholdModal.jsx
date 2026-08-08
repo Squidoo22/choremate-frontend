@@ -4,8 +4,6 @@ import { X } from "lucide-react";
 import { createHousehold, joinHousehold } from "../api/households";
 import { ui } from "../ui";
 
-// Модалка створення нової сім'ї або приєднання за кодом.
-// Після успіху повертає створену/приєднану сім'ю через onDone.
 export default function HouseholdModal({ onDone, onClose }) {
   const { t } = useTranslation();
   const [name, setName] = useState("");

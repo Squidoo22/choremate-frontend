@@ -5,8 +5,6 @@ const LANGS = [
   { code: "en", label: "EN", flag: "🇬🇧" },
 ];
 
-// Сегментований перемикач мови (UA/EN). Мова зберігається в localStorage
-// автоматично (LanguageDetector), тож вибір лишається між сесіями.
 export default function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
   const current = i18n.language?.startsWith("en") ? "en" : "uk";

@@ -1,6 +1,5 @@
-// Спільні Tailwind-класи для форм/модалок — щоб стиль був однорідний.
-// `border-solid` обов'язковий на елементах з рамкою: preflight вимкнено,
-// а легасі `.app-shell button { border: none }` інакше ховає border-style.
+// `border-solid` обов'язковий: preflight вимкнено, і легасі
+// `.app-shell button { border: none }` інакше ховає border-style.
 export const ui = {
   backdrop: "fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4",
   card: "bg-white rounded-2xl w-full max-w-md p-6 shadow-xl",

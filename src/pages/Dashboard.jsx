@@ -86,8 +86,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="dashboard-page">
-      {/* Верхня картка: хто ви + бали/серія */}
+    <div className="max-w-4xl w-full mx-auto px-4 py-6">
       <div className="bg-white rounded-2xl border border-solid border-stone-200 p-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <HouseholdBar
@@ -114,7 +113,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Пошук + нова задача */}
       <div className="mt-4 flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -135,7 +133,6 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Фільтри за статусом */}
       <div className="mt-3 flex flex-wrap gap-2">
         {FILTERS.map((f) => {
           const isActive = filter === f.key;
@@ -164,7 +161,6 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* Список задач */}
       <div className="mt-4 flex flex-col gap-3">
         {visibleTasks.map((task) => (
           <TaskCard

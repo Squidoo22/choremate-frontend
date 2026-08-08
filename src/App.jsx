@@ -9,6 +9,17 @@ import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Statistics from "./pages/Statistics";
+import TrustDebt from "./pages/TrustDebt";
+import Wishlist from "./pages/Wishlist";
+import Gamification from "./pages/Gamification";
+
+function Protected({ children, tabs = false }) {
+  return (
+    <RequireAuth>
+      <Layout showTabs={tabs}>{children}</Layout>
+    </RequireAuth>
+  );
+}
 
 export default function App() {
   return (
@@ -16,42 +27,16 @@ export default function App() {
       <BrowserRouter>
         <HouseholdProvider>
           <Routes>
-          {/* Auth-екрани — повноекранні, без хедера/футера застосунку */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Внутрішні сторінки — в обгортці Layout */}
-          <Route
-            path="/onboarding"
-            element={
-              <RequireAuth>
-                <Layout>
-                  <Onboarding />
-                </Layout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <RequireAuth>
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/statistics"
-            element={
-              <RequireAuth>
-                <Layout>
-                  <Statistics />
-                </Layout>
-              </RequireAuth>
-            }
-          />
+            <Route path="/onboarding" element={<Protected><Onboarding /></Protected>} />
+            <Route path="/dashboard" element={<Protected tabs><Dashboard /></Protected>} />
+            <Route path="/debts" element={<Protected tabs><TrustDebt /></Protected>} />
+            <Route path="/statistics" element={<Protected tabs><Statistics /></Protected>} />
+            <Route path="/wishlist" element={<Protected tabs><Wishlist /></Protected>} />
+            <Route path="/gamification" element={<Protected tabs><Gamification /></Protected>} />
           </Routes>
         </HouseholdProvider>
       </BrowserRouter>
