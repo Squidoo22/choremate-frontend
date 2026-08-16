@@ -129,6 +129,17 @@ const resources = {
         loading: "Завантаження статистики...",
       },
 
+      assistant: {
+        open: "Помічник гармонії",
+        title: "Помічник гармонії",
+        subtitle: "Спільний побут без сварок",
+        greeting: "Привіт! Я допоможу справедливо розподілити справи, підкажу ідею Кредиту Довіри або як спокійно про це поговорити. Що вас турбує?",
+        placeholder: "Напишіть повідомлення…",
+        send: "Надіслати",
+        error: "Ой, не вдалося відповісти. Спробуйте ще раз.",
+        suggestions: ["Розсуди суперечку", "Ідея Кредиту Довіри", "Як спокійно сказати?", "Справедливий розподіл"],
+      },
+
       auth: {
         welcome_login: "Ласкаво просимо! 👋",
         welcome_register: "Створіть свій акаунт 🚀",
@@ -395,6 +406,17 @@ const resources = {
         legend_points: "Points",
         days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         loading: "Loading statistics...",
+      },
+
+      assistant: {
+        open: "Harmony Assistant",
+        title: "Harmony Assistant",
+        subtitle: "Shared chores without fights",
+        greeting: "Hi! I can help split chores fairly, suggest a Trust Credit idea, or how to talk about it calmly. What's on your mind?",
+        placeholder: "Type a message…",
+        send: "Send",
+        error: "Oops, I couldn't reply. Please try again.",
+        suggestions: ["Settle an argument", "Trust Credit idea", "How to say it calmly?", "Fair split"],
       },
 
       auth: {
