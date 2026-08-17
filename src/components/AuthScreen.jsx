@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { login as apiLogin, register as apiRegister } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
-import { USE_MOCKS, TEST_CREDENTIALS, API_BASE } from "../config";
+import { USE_MOCKS, API_BASE } from "../config";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 function GoogleIcon() {
@@ -101,12 +101,6 @@ export default function AuthScreen({ initialMode = "login" }) {
 
   function switchMode(next) {
     setMode(next);
-    setError(null);
-  }
-
-  function fillTestUser() {
-    setEmail(TEST_CREDENTIALS.email);
-    setPassword(TEST_CREDENTIALS.password);
     setError(null);
   }
 
@@ -369,21 +363,6 @@ export default function AuthScreen({ initialMode = "login" }) {
             </button>
           </p>
 
-          {isLogin && USE_MOCKS && (
-            <div className="mt-4 rounded-xl bg-stone-50 border border-stone-200 px-3 py-2.5 text-[11px] md:text-xs text-stone-500 flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span>
-                <span className="font-semibold text-stone-700">{t("auth.test_account")}</span>{" "}
-                {TEST_CREDENTIALS.email} / {TEST_CREDENTIALS.password}
-              </span>
-              <button
-                type="button"
-                onClick={fillTestUser}
-                className="font-semibold text-rose-600 hover:text-rose-700"
-              >
-                {t("auth.fill")}
-              </button>
-            </div>
-          )}
         </section>
       </div>
     </div>
