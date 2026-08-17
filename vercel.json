@@ -3,6 +3,10 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://choremate-backend-liart.vercel.app/api/v1/:path*"
+    },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
