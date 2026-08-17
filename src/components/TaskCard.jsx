@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Check, RefreshCw } from "lucide-react";
+import Avatar from "./Avatar";
 
 const RECURRENCE_KEYS = {
   NONE: null,
@@ -81,9 +82,12 @@ export default function TaskCard({ task, onComplete, onOverdueClick }) {
       <div className="shrink-0 flex items-center gap-2">
         {task.assignee ? (
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 bg-stone-100 rounded-full pl-1 pr-2.5 py-1">
-            <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[11px] font-bold text-stone-500">
-              {task.assignee.name.charAt(0)}
-            </span>
+            <Avatar
+              name={task.assignee.name}
+              seed={task.assignee.id || task.assignee.name}
+              src={task.assignee.avatarUrl}
+              size={20}
+            />
             {task.assignee.name}
           </span>
         ) : (

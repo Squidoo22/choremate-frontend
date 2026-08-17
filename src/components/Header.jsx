@@ -5,6 +5,7 @@ import { APP_NAME } from "../config";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import HouseholdSelect from "./HouseholdSelect";
+import Avatar from "./Avatar";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -51,9 +52,14 @@ export default function Header() {
           <LanguageSwitcher />
           {user && (
             <div className="user-chip">
-              <span className="user-chip__avatar" aria-hidden="true">
-                {user.avatar || "🙂"}
-              </span>
+              <Avatar
+                name={user.name}
+                seed={user.id}
+                src={user.avatarUrl}
+                emoji={user.avatar}
+                size={28}
+                className="user-chip__avatar"
+              />
               <span className="user-chip__name">{user.name}</span>
               <button
                 type="button"

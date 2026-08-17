@@ -1,18 +1,14 @@
-import client from "./client";
-import { USE_MOCKS } from "../config";
 import * as mock from "../mocks/api";
 
+// Бекенд ще не має ендпоінтів wishlist — усі виклики поки що йдуть у мок.
 export function listWishlist(householdId) {
-  if (USE_MOCKS) return mock.listWishlist(householdId);
-  return client.get(`/households/${householdId}/wishlist`);
+  return mock.listWishlist(householdId);
 }
 
 export function createWishlistItem(householdId, item) {
-  if (USE_MOCKS) return mock.createWishlistItem({ householdId, ...item });
-  return client.post(`/households/${householdId}/wishlist`, item);
+  return mock.createWishlistItem({ householdId, ...item });
 }
 
 export function toggleWishlistItem(id) {
-  if (USE_MOCKS) return mock.toggleWishlistItem(id);
-  return client.post(`/wishlist/${id}/toggle`);
+  return mock.toggleWishlistItem(id);
 }

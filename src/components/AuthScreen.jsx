@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { login as apiLogin, register as apiRegister } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
-import { USE_MOCKS, TEST_CREDENTIALS } from "../config";
+import { USE_MOCKS, TEST_CREDENTIALS, API_BASE } from "../config";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 function GoogleIcon() {
@@ -111,8 +111,12 @@ export default function AuthScreen({ initialMode = "login" }) {
   }
 
   function apiError(err, fallbackKey = "auth.err_generic") {
-    const code = err?.response?.data?.error;
-    return code === "invalid_credentials" ? t("auth.err_invalid") : t(fallbackKey);
+    const data = err?.response?.data;
+    if (data?.error === "invalid_credentials") return t("auth.err_invalid");
+    // Бекенд повертає людяне повідомлення (напр. правила пароля) — показуємо його.
+    const msg = Array.isArray(data?.message) ? data.message[0] : data?.message;
+    if (typeof msg === "string" && msg) return msg;
+    return t(fallbackKey);
   }
 
   async function handleEmailSubmit(e) {
@@ -160,6 +164,11 @@ export default function AuthScreen({ initialMode = "login" }) {
   }
 
   async function handleGoogleAuth() {
+    // У реальному режимі стартуємо серверний OAuth-редірект на Google.
+    if (!USE_MOCKS) {
+      window.location.href = `${API_BASE}/auth/google`;
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {

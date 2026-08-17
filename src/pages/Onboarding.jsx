@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Home, KeyRound } from "lucide-react";
 import { createHousehold, joinHousehold } from "../api/households";
+import { useHousehold } from "../context/HouseholdContext";
 import InviteCodeBox from "../components/InviteCodeBox";
 import { ui } from "../ui";
 
 export default function Onboarding() {
   const { t } = useTranslation();
+  const { switchHousehold } = useHousehold();
   const [mode, setMode] = useState(null); // "create" | "join"
   const [name, setName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -20,7 +22,9 @@ export default function Onboarding() {
     setError(null);
     try {
       const { data } = await createHousehold(name);
-      localStorage.setItem("householdId", data.household.id);
+      // switchHousehold оновлює і localStorage, і стан контексту (інакше на
+      // дашборді залишиться старий householdId).
+      switchHousehold(data.household.id);
       setInviteLink(data.inviteLink);
     } catch (err) {
       setError(err.response?.data?.error || t("onboarding.err_create"));
@@ -32,7 +36,7 @@ export default function Onboarding() {
     setError(null);
     try {
       const { data } = await joinHousehold(inviteCode);
-      localStorage.setItem("householdId", data.household.id);
+      switchHousehold(data.household.id);
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.error || t("onboarding.err_join"));

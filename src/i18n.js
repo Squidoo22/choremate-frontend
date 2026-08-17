@@ -215,6 +215,12 @@ const resources = {
         close: "Закрити",
         err_create: "Не вдалося створити сім'ю",
         err_join: "Не вдалося приєднатися",
+        invite_title: "Запросити партнера",
+        invite_hint: "Поділіться посиланням або кодом",
+        copy_link: "Копіювати",
+        copied: "Скопійовано",
+        share: "Поділитися",
+        share_text: "Приєднуйся до мого простору в ChoreMate!",
       },
 
       stats: {
@@ -492,6 +498,12 @@ const resources = {
         close: "Close",
         err_create: "Could not create the family",
         err_join: "Could not join",
+        invite_title: "Invite a partner",
+        invite_hint: "Share the link or code",
+        copy_link: "Copy",
+        copied: "Copied",
+        share: "Share",
+        share_text: "Join my space on ChoreMate!",
       },
 
       stats: {

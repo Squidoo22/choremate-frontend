@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import Avatar from "./Avatar";
 
 export default function HouseholdBar({ members = [], currentUserId, onSelectMember }) {
   const { t } = useTranslation();
@@ -22,13 +23,14 @@ export default function HouseholdBar({ members = [], currentUserId, onSelectMemb
                   : "border-stone-200 bg-white hover:bg-stone-50"
               }`}
             >
-              <span
-                className={`w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm ${
-                  selected ? "ring-2 ring-rose-400" : ""
-                }`}
-              >
-                {m.avatar}
-              </span>
+              <Avatar
+                name={m.name}
+                seed={m.userId}
+                src={m.avatarUrl || m.user?.avatarUrl}
+                emoji={m.avatar || m.user?.avatar}
+                size={40}
+                className={selected ? "ring-2 ring-rose-400" : ""}
+              />
               <span className="text-xs font-semibold text-stone-700">{m.name}</span>
             </button>
           );

@@ -7,14 +7,19 @@ export function listHouseholds() {
   return client.get("/households");
 }
 
+// Бекенд повертає HouseholdResponseDto напряму; фронт очікує {household, inviteLink}.
 export function createHousehold(name) {
   if (USE_MOCKS) return mock.createHousehold(name);
-  return client.post("/households", { name });
+  return client
+    .post("/households", { name })
+    .then((res) => ({ data: { household: res.data, inviteLink: res.data.inviteLink } }));
 }
 
 export function joinHousehold(inviteCode) {
   if (USE_MOCKS) return mock.joinHousehold(inviteCode);
-  return client.post("/households/join", { inviteCode });
+  return client
+    .post("/households/join", { inviteCode })
+    .then((res) => ({ data: { household: res.data } }));
 }
 
 export function getHousehold(id) {
@@ -22,7 +27,7 @@ export function getHousehold(id) {
   return client.get(`/households/${id}`);
 }
 
+// Бекенд ще не має ендпоінта статистики — поки що рахуємо на моку.
 export function getStatistics(householdId) {
-  if (USE_MOCKS) return mock.getStatistics(householdId);
-  return client.get(`/households/${householdId}/statistics`);
+  return mock.getStatistics(householdId);
 }

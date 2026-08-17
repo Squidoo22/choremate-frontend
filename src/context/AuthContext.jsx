@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { logout as apiLogout } from "../api/auth";
 
 const AuthContext = createContext(null);
 
@@ -15,9 +16,17 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logoutUser = useCallback(() => {
+    apiLogout(); // анулюємо refresh-токен на бекенді (best-effort)
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+  }, []);
+
+  // Клієнт кидає цю подію, коли рефреш токена не вдався — примусово розлогінюємось.
+  useEffect(() => {
+    const onForcedLogout = () => setUser(null);
+    window.addEventListener("auth:logout", onForcedLogout);
+    return () => window.removeEventListener("auth:logout", onForcedLogout);
   }, []);
 
   return (

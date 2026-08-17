@@ -23,10 +23,33 @@ export function HouseholdProvider({ children }) {
   }, [user]);
 
   const load = useCallback(async () => {
-    if (!user || !householdId) return;
-    const [hhRes, listRes] = await Promise.all([getHousehold(householdId), listHouseholds()]);
-    setHousehold(hhRes.data);
-    setHouseholds(listRes.data);
+    if (!user) return;
+    try {
+      const listRes = await listHouseholds();
+      const list = listRes.data || [];
+      setHouseholds(list);
+
+      // Обираємо активний простір: збережений (якщо він ще у списку) або перший
+      // доступний. Це відновлює вибір після входу, коли householdId скинуто на виході.
+      const id =
+        householdId && list.some((h) => h.id === householdId)
+          ? householdId
+          : list[0]?.id ?? null;
+
+      if (id && id !== householdId) {
+        localStorage.setItem("householdId", id);
+        setHouseholdId(id);
+      }
+
+      if (id) {
+        const hhRes = await getHousehold(id);
+        setHousehold(hhRes.data);
+      } else {
+        setHousehold(null);
+      }
+    } catch {
+      // 401 обробить інтерсептор (auth:logout); інші помилки тихо ігноруємо.
+    }
   }, [user, householdId]);
 
   useEffect(() => {
