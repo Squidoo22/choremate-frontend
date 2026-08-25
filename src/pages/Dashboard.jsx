@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Search, Plus, AlertTriangle } from "lucide-react";
-import { listTasks, createTask, completeTask, createAttentionRelay } from "../api/tasks";
+import { listTasks, createTask, completeTask, confirmTask, createAttentionRelay } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { useHousehold } from "../context/HouseholdContext";
 import TaskCard from "../components/TaskCard";
@@ -33,13 +33,18 @@ export default function Dashboard() {
   }, [householdId]);
 
   async function handleCreateTask(taskData) {
-    await createTask({ ...taskData, householdId });
+    await createTask({ ...taskData, householdId, creatorId: currentUserId });
     setShowForm(false);
     loadTasks();
   }
 
   async function handleComplete(taskId) {
     await completeTask(taskId);
+    loadTasks();
+  }
+
+  async function handleConfirm(taskId) {
+    await confirmTask(taskId);
     loadTasks();
   }
 
@@ -167,7 +172,9 @@ export default function Dashboard() {
             key={task.id}
             task={task}
             onComplete={handleComplete}
+            onConfirm={handleConfirm}
             onOverdueClick={setRelayTask}
+            currentUserId={currentUserId}
           />
         ))}
         {visibleTasks.length === 0 && (

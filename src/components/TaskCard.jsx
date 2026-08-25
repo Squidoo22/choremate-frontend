@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Check, RefreshCw } from "lucide-react";
+import { Check, RefreshCw, Clock } from "lucide-react";
 import Avatar from "./Avatar";
 
 const RECURRENCE_KEYS = {
@@ -23,12 +23,14 @@ function catColor(str = "") {
   return CAT_COLORS[h % CAT_COLORS.length];
 }
 
-export default function TaskCard({ task, onComplete, onOverdueClick }) {
+export default function TaskCard({ task, onComplete, onConfirm, onOverdueClick, currentUserId }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language?.startsWith("en") ? "en-US" : "uk-UA";
   const recurrenceKey = RECURRENCE_KEYS[task.recurrence];
   const isDone = task.status === "DONE";
+  const isAwaiting = task.status === "AWAITING_CONFIRMATION";
   const isOverdue = task.status === "OVERDUE";
+  const canConfirm = isAwaiting && task.creatorId === currentUserId;
 
   const due = new Date(task.dueDate).toLocaleString(locale, {
     day: "numeric",
@@ -40,21 +42,29 @@ export default function TaskCard({ task, onComplete, onOverdueClick }) {
   return (
     <div
       className={`bg-white rounded-2xl border p-4 flex items-center gap-3 transition-shadow hover:shadow-sm ${
-        isOverdue ? "border-rose-200 ring-1 ring-rose-100" : "border-stone-200"
+        isOverdue
+          ? "border-rose-200 ring-1 ring-rose-100"
+          : isAwaiting
+          ? "border-amber-200 ring-1 ring-amber-100"
+          : "border-stone-200"
       }`}
     >
       <button
         type="button"
-        onClick={() => !isDone && onComplete(task.id)}
-        disabled={isDone}
+        onClick={() => !isDone && !isAwaiting && onComplete(task.id)}
+        disabled={isDone || isAwaiting}
         aria-label={task.title}
+        title={isAwaiting ? t("task.awaiting") : t("task.mark_done")}
         className={`shrink-0 w-6 h-6 rounded-full border-2 border-solid flex items-center justify-center transition ${
           isDone
             ? "bg-rose-500 border-rose-500 text-white"
+            : isAwaiting
+            ? "bg-amber-50 border-amber-400 text-amber-600"
             : "border-stone-300 hover:border-rose-400 bg-white"
         }`}
       >
         {isDone && <Check className="w-3.5 h-3.5" />}
+        {isAwaiting && <Clock className="w-3.5 h-3.5" />}
       </button>
 
       <div className="min-w-0 flex-1">
@@ -105,6 +115,26 @@ export default function TaskCard({ task, onComplete, onOverdueClick }) {
             {t("task.relay")}
           </button>
         )}
+
+        {isAwaiting &&
+          (canConfirm ? (
+            <button
+              type="button"
+              onClick={() => onConfirm(task.id)}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-full px-3 py-1.5 whitespace-nowrap shadow-xs"
+            >
+              <Check className="w-3.5 h-3.5" />
+              {t("task.confirm")}
+            </button>
+          ) : (
+            <span
+              title={t("task.awaiting_hint")}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 rounded-full px-3 py-1.5 whitespace-nowrap"
+            >
+              <Clock className="w-3.5 h-3.5" />
+              {t("task.awaiting")}
+            </span>
+          ))}
       </div>
     </div>
   );

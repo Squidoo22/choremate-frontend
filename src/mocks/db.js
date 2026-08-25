@@ -63,6 +63,9 @@ export function addHousehold(name, emoji = "🏠") {
   return h;
 }
 
+// Життєвий цикл задачі: PENDING/OVERDUE → (виконавець позначає) →
+// AWAITING_CONFIRMATION (completedAt фіксує момент виконання й зупиняє відлік
+// дедлайну) → (автор задачі підтверджує) → DONE (confirmedAt, потрапляє в історію).
 export let tasks = [
   {
     id: "task-1",
@@ -73,6 +76,9 @@ export let tasks = [
     recurrence: "DAILY",
     status: "PENDING",
     assignee: { name: "Денис" },
+    creatorId: "user-1",
+    completedAt: null,
+    confirmedAt: null,
   },
   {
     id: "task-2",
@@ -81,8 +87,11 @@ export let tasks = [
     category: "Покупки",
     dueDate: daysFromNow(1, 18),
     recurrence: "WEEKLY",
-    status: "PENDING",
+    status: "AWAITING_CONFIRMATION",
     assignee: { name: "Софія" },
+    creatorId: "user-1",
+    completedAt: daysFromNow(0, 10),
+    confirmedAt: null,
   },
   {
     id: "task-3",
@@ -93,6 +102,9 @@ export let tasks = [
     recurrence: "MONTHLY",
     status: "OVERDUE",
     assignee: null,
+    creatorId: "user-2",
+    completedAt: null,
+    confirmedAt: null,
   },
   {
     id: "task-4",
@@ -103,6 +115,9 @@ export let tasks = [
     recurrence: "DAILY",
     status: "DONE",
     assignee: { name: "Марко" },
+    creatorId: "user-2",
+    completedAt: daysFromNow(0, 7),
+    confirmedAt: daysFromNow(0, 9),
   },
   {
     id: "task-5",
@@ -113,6 +128,9 @@ export let tasks = [
     recurrence: "DAILY",
     status: "PENDING",
     assignee: { name: "Софія" },
+    creatorId: "user-1",
+    completedAt: null,
+    confirmedAt: null,
   },
   {
     id: "task-6",
@@ -123,9 +141,16 @@ export let tasks = [
     recurrence: "MONTHLY",
     status: "PENDING",
     assignee: { name: "Марко" },
+    creatorId: "user-1",
+    completedAt: null,
+    confirmedAt: null,
   },
 ];
 
+// Життєвий цикл боргу: ACTIVE → (боржник натискає «Погасити борг») →
+// AWAITING_CONFIRMATION → (кредитор підтверджує) → RESOLVED.
+// isResolved лишається false для ACTIVE/AWAITING (щоб борг рахувався активним
+// у статистиці й гейміфікації) і стає true лише після підтвердження.
 export let trustDebts = [
   {
     id: "debt-1",
@@ -136,16 +161,19 @@ export let trustDebts = [
     description: "🍳 Готує святкову романтичну вечерю",
     category: "cooking",
     createdAt: daysFromNow(-3, 9),
+    status: "AWAITING_CONFIRMATION",
+    requestedAt: daysFromNow(0, 11),
     isResolved: false,
   },
   {
     id: "debt-2",
     householdId: "hh-4",
-    debtorId: "user-3",
+    debtorId: "user-1",
     creditorId: "user-2",
     description: "☕ Робить каву в ліжко в суботу вранці",
     category: "coffee",
     createdAt: daysFromNow(-1, 14),
+    status: "ACTIVE",
     isResolved: false,
   },
   {
@@ -156,7 +184,9 @@ export let trustDebts = [
     description: "🎬 Вибирає фільм на кіновечір не сперечаючись",
     category: "movie",
     createdAt: daysFromNow(-6, 20),
+    requestedAt: daysFromNow(-5, 21),
     resolvedAt: daysFromNow(-5, 22),
+    status: "RESOLVED",
     isResolved: true,
   },
 ];
@@ -169,6 +199,7 @@ export function addTrustDebt(debt) {
   const d = {
     id: nextId("debt"),
     createdAt: new Date().toISOString(),
+    status: "ACTIVE",
     isResolved: false,
     ...debt,
   };
@@ -176,9 +207,21 @@ export function addTrustDebt(debt) {
   return d;
 }
 
+// Боржник натиснув «Погасити борг» — борг чекає на підтвердження кредитора.
+export function requestRepayTrustDebt(id) {
+  trustDebts = trustDebts.map((d) =>
+    d.id === id
+      ? { ...d, status: "AWAITING_CONFIRMATION", requestedAt: new Date().toISOString() }
+      : d
+  );
+}
+
+// Кредитор підтвердив — борг вважається погашеним.
 export function resolveTrustDebt(id) {
   trustDebts = trustDebts.map((d) =>
-    d.id === id ? { ...d, isResolved: true, resolvedAt: new Date().toISOString() } : d
+    d.id === id
+      ? { ...d, status: "RESOLVED", isResolved: true, resolvedAt: new Date().toISOString() }
+      : d
   );
 }
 

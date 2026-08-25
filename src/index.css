@@ -176,7 +176,7 @@ body {
   justify-content: flex-end;
 }
 
-/* --- Бейдж «Кредит довіри» біля назви --- */
+/* --- Бейдж «Борг довіри» біля назви --- */
 .app-header__title-row {
   display: flex;
   align-items: center;

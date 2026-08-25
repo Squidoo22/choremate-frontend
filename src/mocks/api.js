@@ -11,6 +11,7 @@ import {
   setTasks,
   listTrustDebtsFor,
   addTrustDebt,
+  requestRepayTrustDebt,
   resolveTrustDebt,
   removeTrustDebt,
   listWishlistFor,
@@ -117,14 +118,33 @@ export function createTask(task) {
     recurrence: task.recurrence || "NONE",
     status: "PENDING",
     assignee: assigneeName ? { name: assigneeName } : null,
+    creatorId: task.creatorId || null,
+    completedAt: null,
+    confirmedAt: null,
   };
   setTasks([...tasks, newTask]);
   return respond(newTask);
 }
 
+// Виконавець позначає задачу виконаною: вона переходить в очікування
+// підтвердження, а completedAt фіксує момент і зупиняє відлік дедлайну.
 export function completeTask(taskId) {
-  setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status: "DONE" } : t)));
-  return respond({ ok: true });
+  const completedAt = new Date().toISOString();
+  const updated = tasks.map((t) =>
+    t.id === taskId ? { ...t, status: "AWAITING_CONFIRMATION", completedAt } : t
+  );
+  setTasks(updated);
+  return respond({ ok: true, task: updated.find((t) => t.id === taskId) });
+}
+
+// Автор задачі підтверджує виконання: задача стає DONE і потрапляє в історію.
+export function confirmTask(taskId) {
+  const confirmedAt = new Date().toISOString();
+  const updated = tasks.map((t) =>
+    t.id === taskId ? { ...t, status: "DONE", confirmedAt } : t
+  );
+  setTasks(updated);
+  return respond({ ok: true, task: updated.find((t) => t.id === taskId) });
 }
 
 export function createAttentionRelay(payload) {
@@ -140,6 +160,11 @@ export function createTrustDebt(debt) {
 }
 
 export function redeemTrustDebt(id) {
+  requestRepayTrustDebt(id);
+  return respond({ ok: true });
+}
+
+export function confirmTrustDebt(id) {
   resolveTrustDebt(id);
   return respond({ ok: true });
 }

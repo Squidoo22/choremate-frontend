@@ -9,8 +9,14 @@ export function createTrustDebt(householdId, debt) {
   return mock.createTrustDebt({ householdId, ...debt });
 }
 
+// Боржник натискає «Погасити борг» — борг переходить в очікування підтвердження.
 export function redeemTrustDebt(id) {
   return mock.redeemTrustDebt(id);
+}
+
+// Кредитор підтверджує погашення — борг вважається погашеним.
+export function confirmTrustDebt(id) {
+  return mock.confirmTrustDebt(id);
 }
 
 export function deleteTrustDebt(id) {

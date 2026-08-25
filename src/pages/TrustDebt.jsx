@@ -4,6 +4,7 @@ import {
   ShieldAlert,
   Sparkles,
   CheckCircle2,
+  Clock,
   Dices,
   Plus,
   HeartHandshake,
@@ -18,6 +19,7 @@ import {
   listTrustDebts,
   createTrustDebt,
   redeemTrustDebt,
+  confirmTrustDebt,
   deleteTrustDebt,
 } from "../api/debts";
 
@@ -71,7 +73,7 @@ export default function TrustDebt() {
     setDebtorId(other?.userId || members[0].userId);
   }, [members, currentMemberId]);
 
-  const activeDebts = debts.filter((d) => !d.isResolved);
+  const openDebts = debts.filter((d) => !d.isResolved);
   const resolvedDebts = debts.filter((d) => d.isResolved);
   const memberById = (id) => members.find((m) => m.userId === id);
 
@@ -92,6 +94,11 @@ export default function TrustDebt() {
 
   async function handleRedeem(id) {
     await redeemTrustDebt(id);
+    load();
+  }
+
+  async function handleConfirm(id) {
+    await confirmTrustDebt(id);
     load();
   }
 
@@ -181,21 +188,26 @@ export default function TrustDebt() {
           <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-rose-600" />
             <span>
-              {t("debts.active_title")} ({activeDebts.length})
+              {t("debts.active_title")} ({openDebts.length})
             </span>
           </h3>
           <span className="text-xs text-stone-500">{t("debts.active_hint")}</span>
         </div>
 
-        {activeDebts.length > 0 ? (
+        {openDebts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {activeDebts.map((debt) => {
+            {openDebts.map((debt) => {
               const debtor = memberById(debt.debtorId);
               const creditor = memberById(debt.creditorId);
+              const isAwaiting = debt.status === "AWAITING_CONFIRMATION";
+              const isDebtor = debt.debtorId === currentMemberId;
+              const isCreditor = debt.creditorId === currentMemberId;
               return (
                 <div
                   key={debt.id}
-                  className="bg-white border border-rose-200 rounded-2xl p-4 shadow-xs hover:shadow-md transition-all"
+                  className={`bg-white border rounded-2xl p-4 shadow-xs hover:shadow-md transition-all ${
+                    isAwaiting ? "border-amber-300 ring-1 ring-amber-100" : "border-rose-200"
+                  }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-2 flex-1">
@@ -237,13 +249,34 @@ export default function TrustDebt() {
                       {t("debts.created")}{" "}
                       {new Date(debt.createdAt).toLocaleDateString(locale)}
                     </span>
-                    <button
-                      onClick={() => handleRedeem(debt.id)}
-                      className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>{t("debts.redeem")}</span>
-                    </button>
+
+                    {isAwaiting ? (
+                      isCreditor ? (
+                        <button
+                          onClick={() => handleConfirm(debt.id)}
+                          className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>{t("debts.confirm")}</span>
+                        </button>
+                      ) : (
+                        <span
+                          title={t("debts.awaiting_hint")}
+                          className="px-3 py-1.5 bg-amber-50 text-amber-700 font-semibold text-xs rounded-xl flex items-center gap-1.5 whitespace-nowrap"
+                        >
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>{t("debts.awaiting_badge")}</span>
+                        </span>
+                      )
+                    ) : isDebtor ? (
+                      <button
+                        onClick={() => handleRedeem(debt.id)}
+                        className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>{t("debts.redeem")}</span>
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               );
