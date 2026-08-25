@@ -22,6 +22,7 @@ import {
   confirmTrustDebt,
   deleteTrustDebt,
 } from "../api/debts";
+import Avatar from "../components/Avatar";
 
 const CUSTOM = "__custom__";
 
@@ -212,13 +213,25 @@ export default function TrustDebt() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-2 flex-1">
                       <div className="flex items-center gap-2 text-xs flex-wrap">
-                        <span className="px-2.5 py-1 bg-rose-50 text-rose-800 font-semibold rounded-lg border border-rose-200 flex items-center gap-1">
-                          <span>{debtor?.avatar || "👤"}</span>
+                        <span className="px-2.5 py-1 bg-rose-50 text-rose-800 font-semibold rounded-lg border border-rose-200 flex items-center gap-1.5">
+                          <Avatar
+                            name={debtor?.name}
+                            seed={debtor?.userId}
+                            src={debtor?.avatarUrl || debtor?.user?.avatarUrl}
+                            emoji={debtor?.avatar || debtor?.user?.avatar}
+                            size={18}
+                          />
                           <span>{debtor?.name || "—"}</span>
                         </span>
                         <span className="text-stone-400 font-medium">{t("debts.owes")}</span>
-                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-800 font-semibold rounded-lg border border-emerald-200 flex items-center gap-1">
-                          <span>{creditor?.avatar || "👤"}</span>
+                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-800 font-semibold rounded-lg border border-emerald-200 flex items-center gap-1.5">
+                          <Avatar
+                            name={creditor?.name}
+                            seed={creditor?.userId}
+                            src={creditor?.avatarUrl || creditor?.user?.avatarUrl}
+                            emoji={creditor?.avatar || creditor?.user?.avatar}
+                            size={18}
+                          />
                           <span>{creditor?.name || "—"}</span>
                         </span>
                       </div>

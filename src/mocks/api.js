@@ -69,35 +69,51 @@ export function getHousehold(id) {
   return respond(getHouseholdById(id));
 }
 
+// Форма збігається з реальним StatisticsResponseDto (GET /statistics).
 export function getStatistics(householdId) {
   const hh = getHouseholdById(householdId);
   const hhTasks = tasks.filter((t) => t.householdId === householdId);
 
-  const totalDone = hhTasks.filter((t) => t.status === "DONE").length;
-  const totalOverdue = hhTasks.filter((t) => t.status === "OVERDUE").length;
+  const completed = hhTasks.filter((t) => t.status === "DONE").length;
+  const overdue = hhTasks.filter((t) => t.status === "OVERDUE").length;
+  const pending = hhTasks.filter(
+    (t) => t.status !== "DONE" && t.status !== "OVERDUE"
+  ).length;
+  const unassignedOverdue = hhTasks.filter(
+    (t) => t.status === "OVERDUE" && !t.assignee
+  ).length;
 
-  const assignedByName = {};
-  const doneByName = {};
+  const byName = {};
   hhTasks.forEach((t) => {
     const name = t.assignee?.name;
     if (!name) return;
-    assignedByName[name] = (assignedByName[name] || 0) + 1;
-    if (t.status === "DONE") doneByName[name] = (doneByName[name] || 0) + 1;
+    const e = byName[name] || (byName[name] = { assigned: 0, completed: 0, overdue: 0 });
+    e.assigned += 1;
+    if (t.status === "DONE") e.completed += 1;
+    if (t.status === "OVERDUE") e.overdue += 1;
   });
-  const totalAssigned = Object.values(assignedByName).reduce((a, b) => a + b, 0);
+  const totalCompleted = completed || 1;
 
-  const perMember = hh.members.map((m) => ({
-    userId: m.userId,
-    name: m.name,
-    sharePercent: totalAssigned
-      ? Math.round(((assignedByName[m.name] || 0) / totalAssigned) * 100)
-      : 0,
-  }));
+  const members = hh.members.map((m) => {
+    const e = byName[m.name] || { assigned: 0, completed: 0, overdue: 0 };
+    return {
+      userId: m.userId,
+      name: m.name,
+      completed: e.completed,
+      completionShare: e.completed / totalCompleted,
+      overdue: e.overdue,
+      assigned: e.assigned,
+      completionRate: e.assigned ? e.completed / e.assigned : 0,
+      averageCompletionHours: null,
+    };
+  });
 
-  const mostActive =
-    Object.entries(doneByName).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-
-  return respond({ perMember, totalDone, totalOverdue, mostActive });
+  return respond({
+    householdId,
+    totals: { tasks: hhTasks.length, completed, overdue, pending, unassignedOverdue, averageCompletionHours: null },
+    members,
+    generatedAt: new Date().toISOString(),
+  });
 }
 
 export function listTasks(householdId) {

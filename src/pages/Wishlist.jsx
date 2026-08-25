@@ -8,6 +8,7 @@ import {
   createWishlistItem,
   toggleWishlistItem,
 } from "../api/wishlist";
+import Avatar from "../components/Avatar";
 
 export default function Wishlist() {
   const { t } = useTranslation();
@@ -125,11 +126,18 @@ export default function Wishlist() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between gap-2 text-xs text-stone-500">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <span>{t("wishlist_page.added_by")}</span>
-                    <span className="font-semibold text-stone-800">
-                      {creator?.avatar} {creator?.name}
-                    </span>
+                    {creator && (
+                      <Avatar
+                        name={creator.name}
+                        seed={creator.userId}
+                        src={creator.avatarUrl || creator.user?.avatarUrl}
+                        emoji={creator.avatar || creator.user?.avatar}
+                        size={16}
+                      />
+                    )}
+                    <span className="font-semibold text-stone-800">{creator?.name}</span>
                   </div>
                   <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 whitespace-nowrap">
                     {t("wishlist_page.points", { pts: item.points })}

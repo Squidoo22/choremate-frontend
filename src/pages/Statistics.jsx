@@ -22,8 +22,9 @@ import {
   Zap,
 } from "lucide-react";
 import { useHousehold } from "../context/HouseholdContext";
-import { listTasks } from "../api/tasks";
+import { getStatistics } from "../api/households";
 import { listTrustDebts } from "../api/debts";
+import Avatar from "../components/Avatar";
 
 const MEMBER_COLORS = ["#E07A5F", "#3D405B", "#81B29A", "#F2CC8F", "#6B705C"];
 
@@ -31,36 +32,43 @@ export default function Statistics() {
   const { t } = useTranslation();
   const { householdId, members } = useHousehold();
 
-  const [tasks, setTasks] = useState(null);
+  const [stats, setStats] = useState(null);
   const [debts, setDebts] = useState([]);
 
   useEffect(() => {
     if (!householdId) return;
-    listTasks(householdId).then((r) => setTasks(r.data));
+    getStatistics(householdId).then((r) => setStats(r.data));
     listTrustDebts(householdId).then((r) => setDebts(r.data));
   }, [householdId]);
 
-  if (!tasks) return <p className="max-w-4xl mx-auto px-4 py-6 text-stone-500">{t("analytics.loading")}</p>;
+  if (!stats) return <p className="max-w-4xl mx-auto px-4 py-6 text-stone-500">{t("analytics.loading")}</p>;
 
-  const completedTasks = tasks.filter((x) => x.status === "DONE");
-  const overdueTasks = tasks.filter((x) => x.status === "OVERDUE");
   const activeDebts = debts.filter((d) => !d.isResolved);
+  const ctxById = (id) => members.find((m) => m.userId === id);
 
-  const workload = members.map((m, i) => {
-    const completedCount = completedTasks.filter((x) => x.assignee?.name === m.name).length;
-    return { member: m, color: MEMBER_COLORS[i % MEMBER_COLORS.length], completedCount };
+  // Розподіл навантаження — із серверних агрегатів (stats.members), збагачений
+  // аватаром/балами з контексту домогосподарства.
+  const workloadPct = stats.members.map((m, i) => {
+    const share = m.completionShare ?? 0;
+    const ctx = ctxById(m.userId);
+    return {
+      member: {
+        ...m,
+        avatar: ctx?.avatar,
+        avatarUrl: ctx?.avatarUrl || ctx?.user?.avatarUrl,
+        points: ctx?.user?.points ?? 0,
+      },
+      color: MEMBER_COLORS[i % MEMBER_COLORS.length],
+      completedCount: m.completed,
+      percentage: share <= 1 ? Math.round(share * 100) : Math.round(share),
+    };
   });
-  const totalCompleted = workload.reduce((s, w) => s + w.completedCount, 0) || 1;
-  const workloadPct = workload.map((w) => ({
-    ...w,
-    percentage: Math.round((w.completedCount / totalCompleted) * 100),
-  }));
   const mostActive = [...workloadPct].sort((a, b) => b.completedCount - a.completedCount)[0];
 
-  const memberChartData = workload.map((w) => ({
+  const memberChartData = workloadPct.map((w) => ({
     name: w.member.name,
     completed: w.completedCount,
-    points: w.member.user?.points ?? 0,
+    points: w.member.points,
   }));
 
   const days = t("analytics.days", { returnObjects: true });
@@ -76,14 +84,14 @@ export default function Statistics() {
   const kpis = [
     {
       label: t("analytics.kpi_completed"),
-      value: completedTasks.length,
+      value: stats.totals.completed,
       sub: t("analytics.kpi_completed_sub"),
       subClass: "text-emerald-700",
       icon: <CheckCircle2 className="w-4 h-4 text-emerald-600" />,
     },
     {
       label: t("analytics.kpi_overdue"),
-      value: overdueTasks.length,
+      value: stats.totals.overdue,
       sub: t("analytics.kpi_overdue_sub"),
       subClass: "text-rose-600",
       icon: <AlertTriangle className="w-4 h-4 text-rose-600" />,
@@ -97,7 +105,7 @@ export default function Statistics() {
     },
     {
       label: t("analytics.kpi_total"),
-      value: tasks.length,
+      value: stats.totals.tasks,
       sub: t("analytics.kpi_total_sub"),
       subClass: "text-indigo-600",
       icon: <ListTodo className="w-4 h-4 text-indigo-600" />,
@@ -124,8 +132,17 @@ export default function Statistics() {
               <div className="text-[10px] text-amber-800 font-bold uppercase tracking-wider">
                 {t("analytics.most_active")}
               </div>
-              <div className="text-xs font-bold text-amber-950">
-                {mostActive.member.avatar} {mostActive.member.name} ({mostActive.percentage}% {t("analytics.load")})
+              <div className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                <Avatar
+                  name={mostActive.member.name}
+                  seed={mostActive.member.userId}
+                  src={mostActive.member.avatarUrl}
+                  emoji={mostActive.member.avatar}
+                  size={18}
+                />
+                <span>
+                  {mostActive.member.name} ({mostActive.percentage}% {t("analytics.load")})
+                </span>
               </div>
             </div>
           </div>
@@ -163,8 +180,15 @@ export default function Statistics() {
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: w.color }} />
                 <div>
-                  <div className="text-xs font-bold text-stone-900">
-                    {w.member.avatar} {w.member.name}
+                  <div className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                    <Avatar
+                      name={w.member.name}
+                      seed={w.member.userId}
+                      src={w.member.avatarUrl}
+                      emoji={w.member.avatar}
+                      size={18}
+                    />
+                    <span>{w.member.name}</span>
                   </div>
                   <div className="text-[11px] text-stone-500">
                     {w.completedCount} {t("analytics.completed_tasks")}

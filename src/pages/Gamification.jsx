@@ -4,6 +4,7 @@ import { Award, Flame, Trophy, Sparkles, CheckCircle2, Crown } from "lucide-reac
 import { useHousehold } from "../context/HouseholdContext";
 import { listTasks } from "../api/tasks";
 import { listTrustDebts } from "../api/debts";
+import Avatar from "../components/Avatar";
 
 export default function Gamification() {
   const { t } = useTranslation();
@@ -70,7 +71,13 @@ export default function Gamification() {
                       #{index + 1}
                     </div>
 
-                    <div className="text-2xl">{member.avatar}</div>
+                    <Avatar
+                      name={member.name}
+                      seed={member.userId}
+                      src={member.avatarUrl || member.user?.avatarUrl}
+                      emoji={member.avatar || member.user?.avatar}
+                      size={36}
+                    />
 
                     <div>
                       <h4 className="text-sm font-bold text-stone-900">{member.name}</h4>

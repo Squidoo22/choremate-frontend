@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ui } from "../ui";
 
+// Значення мають збігатися з enum gestureType на бекенді:
+// coffee | dinner | movie_choice | breakfast | custom.
 const GESTURE_TEMPLATES = [
   { value: "coffee", key: "relay.gesture_coffee" },
   { value: "dinner", key: "relay.gesture_dinner" },
   { value: "movie_choice", key: "relay.gesture_movie" },
-  { value: "next_chore", key: "relay.gesture_chore" },
+  { value: "breakfast", key: "relay.gesture_breakfast" },
 ];
 
 export default function AttentionRelayModal({ task, partnerId, onSubmit, onClose }) {
