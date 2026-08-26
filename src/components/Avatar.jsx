@@ -1,6 +1,9 @@
 // Детермінований аватар: за seed (id або ім'я) стабільно обираємо градієнт
 // із теплої палітри застосунку й показуємо ініціали. Пріоритет відображення:
 // реальне фото (src) → готовий емодзі (моки) → згенерований аватар.
+// Якщо фото не завантажилось (битий/недоступний URL) — падаємо на емодзі/ініціали.
+
+import { useEffect, useState } from "react";
 
 const GRADIENTS = [
   ["#f97316", "#ec4899"], // orange → pink (акцент застосунку)
@@ -30,17 +33,23 @@ function initials(name = "") {
 }
 
 export default function Avatar({ name = "", seed, src, emoji, size = 40, className = "" }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  // Скидаємо помилку, якщо змінився src (напр. інший учасник).
+  useEffect(() => setImgFailed(false), [src]);
+
   const style = { width: size, height: size };
   const base =
     "inline-flex items-center justify-center rounded-full shrink-0 overflow-hidden select-none";
 
-  if (src) {
+  if (src && !imgFailed) {
     return (
       <img
         src={src}
         alt={name}
         style={style}
         className={`${base} object-cover ${className}`}
+        referrerPolicy="no-referrer"
+        onError={() => setImgFailed(true)}
       />
     );
   }

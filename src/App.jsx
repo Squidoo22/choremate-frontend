@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AuthCallback from "./pages/AuthCallback";
+import JoinHousehold from "./pages/JoinHousehold";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Statistics from "./pages/Statistics";
@@ -32,6 +33,14 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route
+              path="/join/:code"
+              element={
+                <RequireAuth>
+                  <JoinHousehold />
+                </RequireAuth>
+              }
+            />
 
             <Route path="/onboarding" element={<Protected><Onboarding /></Protected>} />
             <Route path="/dashboard" element={<Protected tabs><Dashboard /></Protected>} />
