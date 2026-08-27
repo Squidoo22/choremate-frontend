@@ -3,20 +3,24 @@ import { useTranslation } from "react-i18next";
 import { Heart, Plus, CheckCircle2, Gift, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useHousehold } from "../context/HouseholdContext";
+import { useToast } from "../context/ToastContext";
 import {
   listWishlist,
   createWishlistItem,
   toggleWishlistItem,
 } from "../api/wishlist";
 import Avatar from "../components/Avatar";
+import { WishlistSkeleton } from "../components/Skeletons";
 
 export default function Wishlist() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { householdId, members } = useHousehold();
+  const toast = useToast();
   const currentMemberId = user?.id || members[0]?.userId || "";
 
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -24,35 +28,51 @@ export default function Wishlist() {
 
   async function load() {
     if (!householdId) return;
-    const { data } = await listWishlist(householdId);
-    setItems(data);
+    try {
+      const { data } = await listWishlist(householdId);
+      setItems(data);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
+    setLoading(true);
     load();
   }, [householdId]);
 
   const creatorOf = (id) => members.find((m) => m.userId === id);
 
   async function handleToggle(item) {
-    await toggleWishlistItem(item.id);
-    load();
+    const wasDone = item.status === "DONE";
+    try {
+      await toggleWishlistItem(item.id);
+      await load();
+      toast.success(t(wasDone ? "toast.wish_undone" : "toast.wish_done"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleCreate(e) {
     e.preventDefault();
     if (!title.trim()) return;
-    await createWishlistItem(householdId, {
-      title: title.trim(),
-      description: description.trim(),
-      creatorId: currentMemberId,
-      points: Number(points) || 20,
-    });
-    setShowModal(false);
-    setTitle("");
-    setDescription("");
-    setPoints(20);
-    load();
+    try {
+      await createWishlistItem(householdId, {
+        title: title.trim(),
+        description: description.trim(),
+        creatorId: currentMemberId,
+        points: Number(points) || 20,
+      });
+      setShowModal(false);
+      setTitle("");
+      setDescription("");
+      setPoints(20);
+      await load();
+      toast.success(t("toast.wish_created"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   return (
@@ -76,7 +96,9 @@ export default function Wishlist() {
         </button>
       </div>
 
-      {items.length > 0 ? (
+      {loading ? (
+        <WishlistSkeleton />
+      ) : items.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((item) => {
             const creator = creatorOf(item.creatorId);

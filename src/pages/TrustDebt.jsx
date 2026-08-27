@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useHousehold } from "../context/HouseholdContext";
+import { useToast } from "../context/ToastContext";
 import {
   listTrustDebts,
   createTrustDebt,
@@ -22,6 +23,7 @@ import {
   deleteTrustDebt,
 } from "../api/debts";
 import Avatar from "../components/Avatar";
+import { DebtListSkeleton } from "../components/Skeletons";
 
 const CUSTOM = "__custom__";
 
@@ -42,12 +44,14 @@ export default function TrustDebt() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { householdId, members } = useHousehold();
+  const toast = useToast();
 
   const presets = t("debts.presets", { returnObjects: true });
   const currentMemberId = user?.id || members[0]?.userId || "";
   const locale = i18n.language?.startsWith("en") ? "en-US" : "uk-UA";
 
   const [debts, setDebts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [debtorId, setDebtorId] = useState("");
   const [creditorId, setCreditorId] = useState("");
@@ -58,11 +62,16 @@ export default function TrustDebt() {
 
   async function load() {
     if (!householdId) return;
-    const { data } = await listTrustDebts(householdId);
-    setDebts(data);
+    try {
+      const { data } = await listTrustDebts(householdId);
+      setDebts(data);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
+    setLoading(true);
     load();
   }, [householdId]);
 
@@ -93,33 +102,53 @@ export default function TrustDebt() {
   }
 
   async function handleRedeem(id) {
-    await redeemTrustDebt(id);
-    load();
+    try {
+      await redeemTrustDebt(id);
+      await load();
+      toast.success(t("toast.debt_redeemed"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleConfirm(id) {
-    await confirmTrustDebt(id);
-    load();
+    try {
+      await confirmTrustDebt(id);
+      await load();
+      toast.success(t("toast.debt_confirmed"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleDelete(id) {
-    await deleteTrustDebt(id);
-    load();
+    try {
+      await deleteTrustDebt(id);
+      await load();
+      toast.success(t("toast.debt_deleted"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     const finalDesc = description === CUSTOM ? customDescription : description;
     if (!finalDesc.trim()) return;
-    await createTrustDebt(householdId, {
-      debtorId,
-      creditorId,
-      description: finalDesc.trim(),
-      category: "custom",
-    });
-    setShowModal(false);
-    setCustomDescription("");
-    load();
+    try {
+      await createTrustDebt(householdId, {
+        debtorId,
+        creditorId,
+        description: finalDesc.trim(),
+        category: "custom",
+      });
+      setShowModal(false);
+      setCustomDescription("");
+      await load();
+      toast.success(t("toast.debt_created"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   return (
@@ -194,7 +223,9 @@ export default function TrustDebt() {
           <span className="text-xs text-stone-500">{t("debts.active_hint")}</span>
         </div>
 
-        {openDebts.length > 0 ? (
+        {loading ? (
+          <DebtListSkeleton />
+        ) : openDebts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {openDebts.map((debt) => {
               const debtor = memberById(debt.debtorId);

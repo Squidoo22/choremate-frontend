@@ -29,7 +29,6 @@ export default function TaskCard({
   onConfirm,
   onOverdueClick,
   onDelete,
-  currentUserId,
 }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language?.startsWith("en") ? "en-US" : "uk-UA";
@@ -39,8 +38,6 @@ export default function TaskCard({
   const isOverdue = task.status === "OVERDUE";
   // Кнопку «Підтвердити» бачить автор завдання; а якщо асайні немає
   // (завдання «на будь-кого») — підтвердити може будь-хто в домогосподарстві.
-  const canConfirm =
-    isAwaiting && (task.creatorId === currentUserId || !task.assignee);
 
   const due = new Date(task.dueDate).toLocaleString(locale, {
     day: "numeric",
@@ -134,25 +131,16 @@ export default function TaskCard({
           </button>
         )}
 
-        {isAwaiting &&
-          (canConfirm ? (
-            <button
-              type="button"
-              onClick={() => onConfirm(task.id)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-full px-3 py-1.5 whitespace-nowrap shadow-xs"
-            >
-              <Check className="w-3.5 h-3.5" />
-              {t("task.confirm")}
-            </button>
-          ) : (
-            <span
-              title={t("task.awaiting_hint")}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 rounded-full px-3 py-1.5 whitespace-nowrap"
-            >
-              <Clock className="w-3.5 h-3.5" />
-              {t("task.awaiting")}
-            </span>
-          ))}
+        {isAwaiting && (
+          <button
+            type="button"
+            onClick={() => onConfirm(task.id)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 rounded-full px-3 py-1.5 whitespace-nowrap shadow-xs"
+          >
+            <Check className="w-3.5 h-3.5" />
+            {t("task.confirm")}
+          </button>
+        )}
 
         <button
           type="button"

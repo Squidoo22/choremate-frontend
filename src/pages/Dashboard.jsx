@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Search, Plus, AlertTriangle } from "lucide-react";
+import { Search, Plus, AlertTriangle, RefreshCw } from "lucide-react";
 import { listTasks, createTask, completeTask, confirmTask, deleteTask, createAttentionRelay } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { useHousehold } from "../context/HouseholdContext";
+import { useToast } from "../context/ToastContext";
 import TaskCard from "../components/TaskCard";
+import { TaskListSkeleton } from "../components/Skeletons";
 import TaskForm from "../components/TaskForm";
 import AttentionRelayModal from "../components/AttentionRelayModal";
 import HouseholdBar from "../components/HouseholdBar";
@@ -14,8 +16,10 @@ export default function Dashboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { householdId, household, members } = useHousehold();
+  const toast = useToast();
 
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [relayTask, setRelayTask] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(user?.id);
@@ -24,33 +28,58 @@ export default function Dashboard() {
 
   async function loadTasks() {
     if (!householdId) return;
-    const res = await listTasks(householdId);
-    setTasks(res.data);
+    try {
+      const res = await listTasks(householdId);
+      setTasks(res.data);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
+    setLoading(true);
     loadTasks();
   }, [householdId]);
 
   async function handleCreateTask(taskData) {
-    await createTask({ ...taskData, householdId, creatorId: currentUserId });
-    setShowForm(false);
-    loadTasks();
+    try {
+      await createTask({ ...taskData, householdId, creatorId: currentUserId });
+      setShowForm(false);
+      await loadTasks();
+      toast.success(t("toast.task_created"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleComplete(taskId) {
-    await completeTask(taskId);
-    loadTasks();
+    try {
+      await completeTask(taskId);
+      await loadTasks();
+      toast.success(t("toast.task_awaiting"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleConfirm(taskId) {
-    await confirmTask(taskId);
-    loadTasks();
+    try {
+      await confirmTask(taskId);
+      await loadTasks();
+      toast.success(t("toast.task_confirmed"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleDelete(taskId) {
-    await deleteTask(taskId);
-    loadTasks();
+    try {
+      await deleteTask(taskId);
+      await loadTasks();
+      toast.success(t("toast.task_deleted"));
+    } catch {
+      toast.error(t("toast.error"));
+    }
   }
 
   async function handleRelaySubmit(payload) {
@@ -63,9 +92,12 @@ export default function Dashboard() {
   const me = members.find((m) => m.userId === currentUserId)?.user || user;
   const partner = members.find((m) => m.userId !== currentUserId);
 
+  const isRecurring = (x) => x.recurrence && x.recurrence !== "NONE";
+
   const counts = {
     active: tasks.filter((x) => x.status !== "DONE").length,
     overdue: tasks.filter((x) => x.status === "OVERDUE").length,
+    recurring: tasks.filter(isRecurring).length,
     done: tasks.filter((x) => x.status === "DONE").length,
     all: tasks.length,
   };
@@ -77,6 +109,8 @@ export default function Dashboard() {
       ? x.status !== "DONE"
       : filter === "overdue"
       ? x.status === "OVERDUE"
+      : filter === "recurring"
+      ? isRecurring(x)
       : x.status === "DONE";
 
   const visibleTasks = tasks
@@ -90,6 +124,12 @@ export default function Dashboard() {
       label: t("dashboard.filter_overdue"),
       count: counts.overdue,
       icon: <AlertTriangle className="w-3.5 h-3.5" />,
+    },
+    {
+      key: "recurring",
+      label: t("dashboard.filter_recurring"),
+      count: counts.recurring,
+      icon: <RefreshCw className="w-3.5 h-3.5" />,
     },
     { key: "done", label: t("dashboard.filter_done"), count: counts.done },
     { key: "all", label: t("dashboard.filter_all"), count: counts.all },
@@ -172,21 +212,26 @@ export default function Dashboard() {
       </div>
 
       <div className="mt-4 flex flex-col gap-3">
-        {visibleTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onComplete={handleComplete}
-            onConfirm={handleConfirm}
-            onOverdueClick={setRelayTask}
-            onDelete={handleDelete}
-            currentUserId={currentUserId}
-          />
-        ))}
-        {visibleTasks.length === 0 && (
-          <p className="text-center text-sm text-stone-400 py-8">
-            {tasks.length === 0 ? t("dashboard.empty") : t("dashboard.empty_filtered")}
-          </p>
+        {loading ? (
+          <TaskListSkeleton />
+        ) : (
+          <>
+            {visibleTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                onComplete={handleComplete}
+                onConfirm={handleConfirm}
+                onOverdueClick={setRelayTask}
+                onDelete={handleDelete}
+              />
+            ))}
+            {visibleTasks.length === 0 && (
+              <p className="text-center text-sm text-stone-400 py-8">
+                {tasks.length === 0 ? t("dashboard.empty") : t("dashboard.empty_filtered")}
+              </p>
+            )}
+          </>
         )}
       </div>
 

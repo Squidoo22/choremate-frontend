@@ -8,6 +8,20 @@ const resources = {
       app: {
         tagline: "Спільні обов'язки без суперечок та закидів",
       },
+      toast: {
+        error: "Щось пішло не так. Спробуйте ще раз",
+        task_created: "Задачу створено",
+        task_awaiting: "Позначено виконаним — очікує підтвердження",
+        task_confirmed: "Виконання підтверджено 🎉",
+        task_deleted: "Задачу видалено",
+        debt_created: "Борг довіри створено",
+        debt_redeemed: "Погашення надіслано — очікує підтвердження",
+        debt_confirmed: "Борг погашено 🤝",
+        debt_deleted: "Борг видалено",
+        wish_created: "Бажання додано",
+        wish_done: "Бажання виконано 🎁",
+        wish_undone: "Повернено в список бажань",
+      },
       header: {
         credit: "Борг довіри",
         logout: "Вийти",
@@ -198,6 +212,7 @@ const resources = {
         search_placeholder: "Пошук завдань за назвою...",
         filter_active: "Активні",
         filter_overdue: "Прострочені",
+        filter_recurring: "Повторювані",
         filter_done: "Виконані",
         filter_all: "Всі задачі",
       },
@@ -303,6 +318,20 @@ const resources = {
     translation: {
       app: {
         tagline: "Shared chores, no arguments or reproaches",
+      },
+      toast: {
+        error: "Something went wrong. Please try again",
+        task_created: "Task created",
+        task_awaiting: "Marked as done — awaiting confirmation",
+        task_confirmed: "Completion confirmed 🎉",
+        task_deleted: "Task deleted",
+        debt_created: "Trust debt created",
+        debt_redeemed: "Repayment sent — awaiting confirmation",
+        debt_confirmed: "Debt settled 🤝",
+        debt_deleted: "Debt deleted",
+        wish_created: "Wish added",
+        wish_done: "Wish fulfilled 🎁",
+        wish_undone: "Moved back to wishlist",
       },
       header: {
         credit: "Trust debt",
@@ -492,6 +521,7 @@ const resources = {
         search_placeholder: "Search tasks by name...",
         filter_active: "Active",
         filter_overdue: "Overdue",
+        filter_recurring: "Recurring",
         filter_done: "Done",
         filter_all: "All tasks",
       },

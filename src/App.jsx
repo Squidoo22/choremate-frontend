@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { HouseholdProvider } from "./context/HouseholdContext";
+import { ToastProvider } from "./context/ToastContext";
 import { RequireAuth } from "./router";
 import Layout from "./components/Layout";
 
@@ -26,9 +27,10 @@ function Protected({ children, tabs = false }) {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <HouseholdProvider>
-          <Routes>
+      <ToastProvider>
+        <BrowserRouter>
+          <HouseholdProvider>
+            <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -48,9 +50,10 @@ export default function App() {
             <Route path="/statistics" element={<Protected tabs><Statistics /></Protected>} />
             <Route path="/wishlist" element={<Protected tabs><Wishlist /></Protected>} />
             <Route path="/gamification" element={<Protected tabs><Gamification /></Protected>} />
-          </Routes>
-        </HouseholdProvider>
-      </BrowserRouter>
+            </Routes>
+          </HouseholdProvider>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }
