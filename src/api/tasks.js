@@ -105,6 +105,18 @@ export function confirmTask(taskId) {
   });
 }
 
+// Повне видалення задачі на бекенді (DELETE /tasks/{id}); чистимо й локальний overlay.
+export function deleteTask(taskId) {
+  if (USE_MOCKS) return mock.deleteTask(taskId);
+  return client.delete(`/tasks/${taskId}`).then((res) => {
+    if (overlay[taskId]) {
+      delete overlay[taskId];
+      persistOverlay();
+    }
+    return { data: res.data };
+  });
+}
+
 export function createAttentionRelay(payload) {
   if (USE_MOCKS) return mock.createAttentionRelay(payload);
   return client.post("/attention-relay", payload).then((res) => ({ data: res.data }));

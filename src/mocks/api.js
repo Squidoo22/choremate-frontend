@@ -163,6 +163,11 @@ export function confirmTask(taskId) {
   return respond({ ok: true, task: updated.find((t) => t.id === taskId) });
 }
 
+export function deleteTask(taskId) {
+  setTasks(tasks.filter((t) => t.id !== taskId));
+  return respond({ ok: true });
+}
+
 export function createAttentionRelay(payload) {
   return respond({ ok: true, relay: { id: nextId("relay"), ...payload } });
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Search, Plus, AlertTriangle } from "lucide-react";
-import { listTasks, createTask, completeTask, confirmTask, createAttentionRelay } from "../api/tasks";
+import { listTasks, createTask, completeTask, confirmTask, deleteTask, createAttentionRelay } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { useHousehold } from "../context/HouseholdContext";
 import TaskCard from "../components/TaskCard";
@@ -45,6 +45,11 @@ export default function Dashboard() {
 
   async function handleConfirm(taskId) {
     await confirmTask(taskId);
+    loadTasks();
+  }
+
+  async function handleDelete(taskId) {
+    await deleteTask(taskId);
     loadTasks();
   }
 
@@ -174,6 +179,7 @@ export default function Dashboard() {
             onComplete={handleComplete}
             onConfirm={handleConfirm}
             onOverdueClick={setRelayTask}
+            onDelete={handleDelete}
             currentUserId={currentUserId}
           />
         ))}

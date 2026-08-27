@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Check, RefreshCw, Clock } from "lucide-react";
+import { Check, RefreshCw, Clock, Trash2 } from "lucide-react";
 import Avatar from "./Avatar";
 
 const RECURRENCE_KEYS = {
@@ -23,7 +23,14 @@ function catColor(str = "") {
   return CAT_COLORS[h % CAT_COLORS.length];
 }
 
-export default function TaskCard({ task, onComplete, onConfirm, onOverdueClick, currentUserId }) {
+export default function TaskCard({
+  task,
+  onComplete,
+  onConfirm,
+  onOverdueClick,
+  onDelete,
+  currentUserId,
+}) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language?.startsWith("en") ? "en-US" : "uk-UA";
   const recurrenceKey = RECURRENCE_KEYS[task.recurrence];
@@ -42,9 +49,15 @@ export default function TaskCard({ task, onComplete, onConfirm, onOverdueClick, 
     minute: "2-digit",
   });
 
+  function handleDelete() {
+    if (window.confirm(t("task.delete_confirm", { title: task.title }))) {
+      onDelete(task.id);
+    }
+  }
+
   return (
     <div
-      className={`bg-white rounded-2xl border p-4 flex items-center gap-3 transition-shadow hover:shadow-sm ${
+      className={`bg-white rounded-2xl border p-4 transition-shadow hover:shadow-sm ${
         isOverdue
           ? "border-rose-200 ring-1 ring-rose-100"
           : isAwaiting
@@ -52,63 +65,65 @@ export default function TaskCard({ task, onComplete, onConfirm, onOverdueClick, 
           : "border-stone-200"
       }`}
     >
-      <button
-        type="button"
-        onClick={() => !isDone && !isAwaiting && onComplete(task.id)}
-        disabled={isDone || isAwaiting}
-        aria-label={task.title}
-        title={isAwaiting ? t("task.awaiting") : t("task.mark_done")}
-        className={`shrink-0 w-6 h-6 rounded-full border-2 border-solid flex items-center justify-center transition ${
-          isDone
-            ? "bg-rose-500 border-rose-500 text-white"
-            : isAwaiting
-            ? "bg-amber-50 border-amber-400 text-amber-600"
-            : "border-stone-300 hover:border-rose-400 bg-white"
-        }`}
-      >
-        {isDone && <Check className="w-3.5 h-3.5" />}
-        {isAwaiting && <Clock className="w-3.5 h-3.5" />}
-      </button>
-
-      <div className="min-w-0 flex-1">
-        <p
-          className={`font-semibold text-stone-900 truncate ${
-            isDone ? "line-through text-stone-400" : ""
+      <div className="flex items-start gap-3">
+        <button
+          type="button"
+          onClick={() => !isDone && !isAwaiting && onComplete(task.id)}
+          disabled={isDone || isAwaiting}
+          aria-label={task.title}
+          title={isAwaiting ? t("task.awaiting") : t("task.mark_done")}
+          className={`shrink-0 mt-0.5 w-6 h-6 rounded-full border-2 border-solid flex items-center justify-center transition ${
+            isDone
+              ? "bg-rose-500 border-rose-500 text-white"
+              : isAwaiting
+              ? "bg-amber-50 border-amber-400 text-amber-600"
+              : "border-stone-300 hover:border-rose-400 bg-white"
           }`}
         >
-          {task.title}
-        </p>
-        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-stone-500">
-          <span className={`px-2 py-0.5 rounded-full font-medium ${catColor(task.category)}`}>
-            {task.category}
-          </span>
-          <span>{due}</span>
-          {recurrenceKey && (
-            <span className="inline-flex items-center gap-1">
-              <RefreshCw className="w-3 h-3" />
-              {t(recurrenceKey)}
-            </span>
-          )}
-        </div>
-      </div>
+          {isDone && <Check className="w-3.5 h-3.5" />}
+          {isAwaiting && <Clock className="w-3.5 h-3.5" />}
+        </button>
 
-      <div className="shrink-0 flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <p
+            className={`font-semibold text-stone-900 break-words ${
+              isDone ? "line-through text-stone-400" : ""
+            }`}
+          >
+            {task.title}
+          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-stone-500">
+            <span className={`px-2 py-0.5 rounded-full font-medium ${catColor(task.category)}`}>
+              {task.category}
+            </span>
+            <span>{due}</span>
+            {recurrenceKey && (
+              <span className="inline-flex items-center gap-1">
+                <RefreshCw className="w-3 h-3" />
+                {t(recurrenceKey)}
+              </span>
+            )}
+          </div>
+        </div>
+
         {task.assignee ? (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 bg-stone-100 rounded-full pl-1 pr-2.5 py-1">
+          <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 bg-stone-100 rounded-full pl-1 pr-2.5 py-1 max-w-[9rem]">
             <Avatar
               name={task.assignee.name}
               seed={task.assignee.id || task.assignee.name}
               src={task.assignee.avatarUrl}
               size={20}
             />
-            {task.assignee.name}
+            <span className="truncate">{task.assignee.name}</span>
           </span>
         ) : (
-          <span className="text-xs text-stone-400 bg-stone-100 rounded-full px-2.5 py-1">
+          <span className="shrink-0 text-xs text-stone-400 bg-stone-100 rounded-full px-2.5 py-1">
             {t("task.anyone")}
           </span>
         )}
+      </div>
 
+      <div className="mt-3 flex flex-wrap items-center justify-between sm:justify-end gap-2">
         {isOverdue && (
           <button
             type="button"
@@ -138,6 +153,17 @@ export default function TaskCard({ task, onComplete, onConfirm, onOverdueClick, 
               {t("task.awaiting")}
             </span>
           ))}
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          aria-label={t("task.delete")}
+          title={t("task.delete")}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 bg-stone-100 hover:bg-rose-50 hover:text-rose-600 rounded-full px-3 py-1.5 whitespace-nowrap"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          {t("task.delete")}
+        </button>
       </div>
     </div>
   );
