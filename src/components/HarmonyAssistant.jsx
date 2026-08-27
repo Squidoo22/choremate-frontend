@@ -95,13 +95,13 @@ export default function HarmonyAssistant() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={t("assistant.open")}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 text-white shadow-lg shadow-rose-500/30 flex items-center justify-center hover:from-orange-600 hover:to-rose-600 transition-all"
+        className="fixed bottom-24 right-6 sm:bottom-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 text-white shadow-lg shadow-rose-500/30 flex items-center justify-center hover:from-orange-600 hover:to-rose-600 transition-all"
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[calc(100vw-3rem)] max-w-sm h-[70vh] max-h-[560px] bg-white rounded-3xl border border-stone-200 shadow-xl flex flex-col overflow-hidden animate-fade-in">
+        <div className="fixed bottom-40 right-6 sm:bottom-24 z-50 w-[calc(100vw-3rem)] max-w-sm h-[70vh] max-h-[560px] bg-white rounded-3xl border border-stone-200 shadow-xl flex flex-col overflow-hidden animate-fade-in">
           <div className="bg-gradient-to-r from-orange-500 to-rose-500 text-white px-4 py-3 flex items-center gap-2.5 shrink-0">
             <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
               <HeartHandshake className="w-5 h-5" />

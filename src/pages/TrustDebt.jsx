@@ -4,7 +4,6 @@ import {
   ShieldAlert,
   Sparkles,
   CheckCircle2,
-  Clock,
   Dices,
   Plus,
   HeartHandshake,
@@ -201,8 +200,6 @@ export default function TrustDebt() {
               const debtor = memberById(debt.debtorId);
               const creditor = memberById(debt.creditorId);
               const isAwaiting = debt.status === "AWAITING_CONFIRMATION";
-              const isDebtor = debt.debtorId === currentMemberId;
-              const isCreditor = debt.creditorId === currentMemberId;
               return (
                 <div
                   key={debt.id}
@@ -264,24 +261,14 @@ export default function TrustDebt() {
                     </span>
 
                     {isAwaiting ? (
-                      isCreditor ? (
-                        <button
-                          onClick={() => handleConfirm(debt.id)}
-                          className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>{t("debts.confirm")}</span>
-                        </button>
-                      ) : (
-                        <span
-                          title={t("debts.awaiting_hint")}
-                          className="px-3 py-1.5 bg-amber-50 text-amber-700 font-semibold text-xs rounded-xl flex items-center gap-1.5 whitespace-nowrap"
-                        >
-                          <Clock className="w-3.5 h-3.5" />
-                          <span>{t("debts.awaiting_badge")}</span>
-                        </span>
-                      )
-                    ) : isDebtor ? (
+                      <button
+                        onClick={() => handleConfirm(debt.id)}
+                        className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{t("debts.confirm")}</span>
+                      </button>
+                    ) : (
                       <button
                         onClick={() => handleRedeem(debt.id)}
                         className="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
@@ -289,7 +276,7 @@ export default function TrustDebt() {
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>{t("debts.redeem")}</span>
                       </button>
-                    ) : null}
+                    )}
                   </div>
                 </div>
               );

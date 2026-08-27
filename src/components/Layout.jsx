@@ -8,7 +8,7 @@ export default function Layout({ children, showTabs = false }) {
     <div className="app-shell">
       <Header />
       {showTabs && <TabNav />}
-      <main className="app-main">{children}</main>
+      <main className={`app-main${showTabs ? " pb-24 sm:pb-0" : ""}`}>{children}</main>
       <Footer />
       <HarmonyAssistant />
     </div>
