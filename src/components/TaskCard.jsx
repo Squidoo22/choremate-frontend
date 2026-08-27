@@ -30,7 +30,10 @@ export default function TaskCard({ task, onComplete, onConfirm, onOverdueClick, 
   const isDone = task.status === "DONE";
   const isAwaiting = task.status === "AWAITING_CONFIRMATION";
   const isOverdue = task.status === "OVERDUE";
-  const canConfirm = isAwaiting && task.creatorId === currentUserId;
+  // Кнопку «Підтвердити» бачить автор завдання; а якщо асайні немає
+  // (завдання «на будь-кого») — підтвердити може будь-хто в домогосподарстві.
+  const canConfirm =
+    isAwaiting && (task.creatorId === currentUserId || !task.assignee);
 
   const due = new Date(task.dueDate).toLocaleString(locale, {
     day: "numeric",
