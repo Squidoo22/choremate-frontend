@@ -4,6 +4,7 @@ import { HouseholdProvider } from "./context/HouseholdContext";
 import { ToastProvider } from "./context/ToastContext";
 import { RequireAuth } from "./router";
 import Layout from "./components/Layout";
+import SessionExpiryToast from "./components/SessionExpiryToast";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <AuthProvider>
       <ToastProvider>
+        <SessionExpiryToast />
         <BrowserRouter>
           <HouseholdProvider>
             <Routes>

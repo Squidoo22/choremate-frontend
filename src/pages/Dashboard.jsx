@@ -12,6 +12,32 @@ import TaskForm from "../components/TaskForm";
 import AttentionRelayModal from "../components/AttentionRelayModal";
 import HouseholdBar from "../components/HouseholdBar";
 
+// Ключ повторюваної серії: однакові задачі відрізняються лише датою.
+function seriesKey(task) {
+  const assignee = task.assigneeId ?? task.assignee?.id ?? "any";
+  return [task.title.trim().toLowerCase(), task.recurrence, assignee, task.category].join("|");
+}
+
+// Згортаємо кожну серію в один репрезентативний елемент — найближче майбутнє
+// повторення (або найсвіжіше, якщо всі в минулому) — з полем _groupCount.
+function groupRecurring(list) {
+  const groups = new Map();
+  for (const task of list) {
+    const key = seriesKey(task);
+    const group = groups.get(key);
+    if (group) group.push(task);
+    else groups.set(key, [task]);
+  }
+
+  const now = Date.now();
+  return Array.from(groups.values()).map((group) => {
+    if (group.length === 1) return group[0];
+    const sorted = [...group].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    const next = sorted.find((x) => new Date(x.dueDate).getTime() >= now) ?? sorted[sorted.length - 1];
+    return { ...next, _groupCount: group.length };
+  });
+}
+
 export default function Dashboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -113,9 +139,15 @@ export default function Dashboard() {
       ? isRecurring(x)
       : x.status === "DONE";
 
-  const visibleTasks = tasks
+  const filteredTasks = tasks
     .filter(byFilter)
     .filter((x) => x.title.toLowerCase().includes(search.trim().toLowerCase()));
+
+  // У фільтрі «Повторювані» згортаємо однакові повторення (той самий заголовок +
+  // періодичність + виконавець + категорія) в одну картку з лічильником, щоб
+  // список не роздувався інстансами тієї самої задачі.
+  const visibleTasks =
+    filter === "recurring" ? groupRecurring(filteredTasks) : filteredTasks;
 
   const FILTERS = [
     { key: "active", label: t("dashboard.filter_active"), count: counts.active },
@@ -220,6 +252,7 @@ export default function Dashboard() {
               <TaskCard
                 key={task.id}
                 task={task}
+                groupCount={task._groupCount ?? 1}
                 onComplete={handleComplete}
                 onConfirm={handleConfirm}
                 onOverdueClick={setRelayTask}

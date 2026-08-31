@@ -21,6 +21,7 @@ const resources = {
         wish_created: "Бажання додано",
         wish_done: "Бажання виконано 🎁",
         wish_undone: "Повернено в список бажань",
+        session_expired: "Ваша сесія закінчилась. Будь ласка, авторизуйтесь повторно",
       },
       header: {
         credit: "Борг довіри",
@@ -255,6 +256,8 @@ const resources = {
         recurrence_daily: "щодня",
         recurrence_weekly: "щотижня",
         recurrence_monthly: "щомісяця",
+        occurrences_one: "{{count}} повторення",
+        occurrences_other: "{{count}} повторень",
         anyone: "будь-хто",
         relay: "Естафета уваги →",
         mark_done: "Позначити виконаним",
@@ -332,6 +335,7 @@ const resources = {
         wish_created: "Wish added",
         wish_done: "Wish fulfilled 🎁",
         wish_undone: "Moved back to wishlist",
+        session_expired: "Your session has expired. Please sign in again",
       },
       header: {
         credit: "Trust debt",
@@ -564,6 +568,8 @@ const resources = {
         recurrence_daily: "daily",
         recurrence_weekly: "weekly",
         recurrence_monthly: "monthly",
+        occurrences_one: "{{count}} occurrence",
+        occurrences_other: "{{count}} occurrences",
         anyone: "anyone",
         relay: "Attention relay →",
         mark_done: "Mark as done",

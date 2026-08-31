@@ -33,26 +33,24 @@ async function refreshTokens() {
 }
 
 function clearSession() {
+  // Якщо токенів уже нема — сесію очистив попередній 401; не дублюємо подію/тост.
+  if (!localStorage.getItem("token") && !localStorage.getItem("refreshToken")) return;
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
-  // Повідомляємо застосунок, що сесія завершилась — гард маршрутів зробить редірект.
-  window.dispatchEvent(new Event("auth:logout"));
+  // Повідомляємо застосунок, що сесія завершилась: гард маршрутів зробить редірект,
+  // а слухач покаже тост про необхідність повторної авторизації.
+  window.dispatchEvent(new CustomEvent("auth:logout", { detail: { reason: "session_expired" } }));
 }
 
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { config, response } = error;
+    const is401 = response?.status === 401 && config && !isAuthFree(config.url);
 
     // Спроба автоматичного оновлення токена при 401 (один раз на запит).
-    if (
-      response?.status === 401 &&
-      config &&
-      !config._retry &&
-      !isAuthFree(config.url) &&
-      localStorage.getItem("refreshToken")
-    ) {
+    if (is401 && !config._retry && localStorage.getItem("refreshToken")) {
       config._retry = true;
       try {
         refreshing = refreshing || refreshTokens();
@@ -65,6 +63,12 @@ client.interceptors.response.use(
         clearSession();
         return Promise.reject(refreshErr);
       }
+    }
+
+    // 401 без можливості рефрешу (немає refresh-токена або повторна невдача) —
+    // примусово завершуємо сесію й просимо авторизуватись повторно.
+    if (is401) {
+      clearSession();
     }
 
     // Нормалізуємо повідомлення бекенду ({statusCode,error,message,...}) у зручне

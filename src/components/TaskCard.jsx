@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Check, RefreshCw, Clock, Trash2 } from "lucide-react";
+import { Check, RefreshCw, Clock, Trash2, Layers } from "lucide-react";
 import Avatar from "./Avatar";
 
 const RECURRENCE_KEYS = {
@@ -29,6 +29,7 @@ export default function TaskCard({
   onConfirm,
   onOverdueClick,
   onDelete,
+  groupCount = 1,
 }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language?.startsWith("en") ? "en-US" : "uk-UA";
@@ -98,6 +99,15 @@ export default function TaskCard({
               <span className="inline-flex items-center gap-1">
                 <RefreshCw className="w-3 h-3" />
                 {t(recurrenceKey)}
+              </span>
+            )}
+            {groupCount > 1 && (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium bg-stone-100 text-stone-600"
+                title={t("task.occurrences", { count: groupCount })}
+              >
+                <Layers className="w-3 h-3" />
+                {t("task.occurrences", { count: groupCount })}
               </span>
             )}
           </div>
