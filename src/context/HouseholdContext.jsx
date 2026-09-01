@@ -47,8 +47,10 @@ export function HouseholdProvider({ children }) {
       } else {
         setHousehold(null);
       }
-    } catch {
-      // 401 обробить інтерсептор (auth:logout); інші помилки тихо ігноруємо.
+    } catch (err) {
+      if (err?.response?.status !== 401) {
+        console.error("[HouseholdContext] load failed:", err);
+      }
     }
   }, [user, householdId]);
 

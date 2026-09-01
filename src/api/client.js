@@ -26,7 +26,12 @@ let refreshing = null;
 async function refreshTokens() {
   const refreshToken = localStorage.getItem("refreshToken");
   if (!refreshToken) throw new Error("no_refresh_token");
-  const { data } = await axios.post(`${client.defaults.baseURL}/auth/refresh`, { refreshToken });
+  const { data } = await axios.post(
+    `${client.defaults.baseURL}/auth/refresh`,
+    { refreshToken },
+    { timeout: 10000 }
+  );
+  if (!data?.accessToken) throw new Error("refresh_no_token");
   localStorage.setItem("token", data.accessToken);
   if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
   return data.accessToken;
