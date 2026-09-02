@@ -11,6 +11,7 @@ export function HouseholdProvider({ children }) {
   const [households, setHouseholds] = useState([]);
   const [household, setHousehold] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -19,6 +20,7 @@ export function HouseholdProvider({ children }) {
       setHouseholdId(null);
       setHousehold(null);
       setHouseholds([]);
+      setLoaded(false);
     }
   }, [user]);
 
@@ -51,6 +53,8 @@ export function HouseholdProvider({ children }) {
       if (err?.response?.status !== 401) {
         console.error("[HouseholdContext] load failed:", err);
       }
+    } finally {
+      setLoaded(true);
     }
   }, [user, householdId]);
 
@@ -73,6 +77,7 @@ export function HouseholdProvider({ children }) {
     householdId,
     households,
     household,
+    loaded,
     members: household?.members ?? [],
     switchHousehold,
     openCreate: () => setShowCreate(true),

@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { HouseholdProvider } from "./context/HouseholdContext";
 import { ToastProvider } from "./context/ToastContext";
-import { RequireAuth } from "./router";
+import { RequireAuth, RequireHousehold, RootRedirect } from "./router";
 import Layout from "./components/Layout";
 import SessionExpiryToast from "./components/SessionExpiryToast";
 
@@ -18,11 +18,9 @@ import Wishlist from "./pages/Wishlist";
 import Gamification from "./pages/Gamification";
 
 function Protected({ children, tabs = false }) {
-  return (
-    <RequireAuth>
-      <Layout showTabs={tabs}>{children}</Layout>
-    </RequireAuth>
-  );
+  const page = <Layout showTabs={tabs}>{children}</Layout>;
+
+  return <RequireAuth>{tabs ? <RequireHousehold>{page}</RequireHousehold> : page}</RequireAuth>;
 }
 
 export default function App() {
@@ -33,7 +31,7 @@ export default function App() {
         <BrowserRouter>
           <HouseholdProvider>
             <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<RootRedirect />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
