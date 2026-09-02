@@ -32,7 +32,7 @@ function initials(name = "") {
   return (first + second).toUpperCase();
 }
 
-export default function Avatar({ name = "", seed, src, emoji, size = 40, className = "" }) {
+export default function Avatar({ name = "", seed, src = null, emoji = null, size = 40, className = "" }) {
   const [imgFailed, setImgFailed] = useState(false);
   // Скидаємо помилку, якщо змінився src (напр. інший учасник).
   useEffect(() => setImgFailed(false), [src]);

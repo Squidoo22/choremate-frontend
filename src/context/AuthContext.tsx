@@ -1,9 +1,17 @@
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import type { ReactNode } from "react";
 import { logout as apiLogout } from "../api/auth";
+import type { User } from "../types";
 
-const AuthContext = createContext(null);
+interface AuthContextValue {
+  user: User | null;
+  loginUser: (token: string, userData: User) => void;
+  logoutUser: () => void;
+}
 
-export function AuthProvider({ children }) {
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;

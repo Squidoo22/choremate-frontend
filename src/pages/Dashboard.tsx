@@ -32,7 +32,7 @@ function groupRecurring(list) {
   const now = Date.now();
   return Array.from(groups.values()).map((group) => {
     if (group.length === 1) return group[0];
-    const sorted = [...group].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    const sorted = [...group].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const next = sorted.find((x) => new Date(x.dueDate).getTime() >= now) ?? sorted[sorted.length - 1];
     return { ...next, _groupCount: group.length };
   });

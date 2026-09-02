@@ -1,15 +1,28 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import type { ReactNode } from "react";
 import { getHousehold, listHouseholds } from "../api/households";
 import { useAuth } from "./AuthContext";
 import HouseholdModal from "../components/HouseholdModal";
+import type { Household, Member } from "../types";
 
-const HouseholdContext = createContext(null);
+interface HouseholdContextValue {
+  householdId: string | null;
+  households: Household[];
+  household: Household | null;
+  loaded: boolean;
+  members: Member[];
+  switchHousehold: (id: string) => void;
+  openCreate: () => void;
+  reload: () => Promise<void>;
+}
 
-export function HouseholdProvider({ children }) {
+const HouseholdContext = createContext<HouseholdContextValue | null>(null);
+
+export function HouseholdProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [householdId, setHouseholdId] = useState(() => localStorage.getItem("householdId"));
-  const [households, setHouseholds] = useState([]);
-  const [household, setHousehold] = useState(null);
+  const [householdId, setHouseholdId] = useState<string | null>(() => localStorage.getItem("householdId"));
+  const [households, setHouseholds] = useState<Household[]>([]);
+  const [household, setHousehold] = useState<Household | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [loaded, setLoaded] = useState(false);
 

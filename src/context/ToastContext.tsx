@@ -1,8 +1,18 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
+import type { Toast, ToastType } from "../types";
 
-const ToastContext = createContext(null);
+interface ToastContextValue {
+  show: (message: string, type?: ToastType, duration?: number) => number;
+  success: (message: string, duration?: number) => number;
+  error: (message: string, duration?: number) => number;
+  info: (message: string, duration?: number) => number;
+  dismiss: (id: number) => void;
+}
+
+const ToastContext = createContext<ToastContextValue | null>(null);
 
 const ICONS = { success: CheckCircle2, error: AlertCircle, info: Info };
 
@@ -18,17 +28,17 @@ const ICON_COLORS = {
   info: "text-stone-500",
 };
 
-export function ToastProvider({ children }) {
+export function ToastProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const idRef = useRef(0);
 
-  const dismiss = useCallback((id) => {
+  const dismiss = useCallback((id: number) => {
     setToasts((list) => list.filter((toast) => toast.id !== id));
   }, []);
 
   const push = useCallback(
-    (message, type = "info", duration = 3500) => {
+    (message: string, type: ToastType = "info", duration = 3500) => {
       const id = (idRef.current += 1);
       setToasts((list) => [...list, { id, message, type }]);
       if (duration > 0) setTimeout(() => dismiss(id), duration);

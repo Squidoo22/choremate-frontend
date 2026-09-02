@@ -240,7 +240,7 @@ export default function Wishlist() {
                   max="200"
                   step="5"
                   value={points}
-                  onChange={(e) => setPoints(e.target.value)}
+                  onChange={(e) => setPoints(Number(e.target.value))}
                   className="w-28 px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-400"
                 />
               </div>

@@ -1,4 +1,5 @@
 import { TEST_CREDENTIALS } from "../config";
+import type { TrustDebt } from "../types";
 
 function daysFromNow(days, hour = 20) {
   const d = new Date();
@@ -151,7 +152,7 @@ export let tasks = [
 // AWAITING_CONFIRMATION → (кредитор підтверджує) → RESOLVED.
 // isResolved лишається false для ACTIVE/AWAITING (щоб борг рахувався активним
 // у статистиці й гейміфікації) і стає true лише після підтвердження.
-export let trustDebts = [
+export let trustDebts: TrustDebt[] = [
   {
     id: "debt-1",
     householdId: "hh-4",

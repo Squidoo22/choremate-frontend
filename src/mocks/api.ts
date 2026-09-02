@@ -19,15 +19,17 @@ import {
   toggleWishlist,
 } from "./db";
 
+import type { DataResponse } from "../types";
+
 const LATENCY = 300;
 
-function respond(data) {
+function respond<T>(data: T): Promise<DataResponse<T>> {
   return new Promise((resolve) => {
     setTimeout(() => resolve({ data }), LATENCY);
   });
 }
 
-function reject(error) {
+function reject(error: string): Promise<never> {
   return new Promise((_, rej) => {
     setTimeout(() => rej({ response: { data: { error } } }), LATENCY);
   });

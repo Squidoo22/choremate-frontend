@@ -71,7 +71,7 @@ export default function Statistics() {
     points: w.member.points,
   }));
 
-  const days = t("analytics.days", { returnObjects: true });
+  const days = t("analytics.days", { returnObjects: true }) as string[];
   const chartMembers = members.slice(0, 3);
   const weeklyData = days.map((day, idx) => {
     const row = { day };

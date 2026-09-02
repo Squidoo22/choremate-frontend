@@ -46,7 +46,7 @@ export default function TrustDebt() {
   const { householdId, members } = useHousehold();
   const toast = useToast();
 
-  const presets = t("debts.presets", { returnObjects: true });
+  const presets = t("debts.presets", { returnObjects: true }) as string[];
   const currentMemberId = user?.id || members[0]?.userId || "";
   const locale = i18n.language?.startsWith("en") ? "en-US" : "uk-UA";
 

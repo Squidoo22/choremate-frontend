@@ -19,7 +19,7 @@ export default function HarmonyAssistant() {
   const [context, setContext] = useState(null);
   const scrollRef = useRef(null);
 
-  const suggestions = t("assistant.suggestions", { returnObjects: true });
+  const suggestions = t("assistant.suggestions", { returnObjects: true }) as string[];
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -72,7 +72,7 @@ export default function HarmonyAssistant() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy]);
 
-  async function send(text) {
+  async function send(text?: string) {
     const content = (text ?? input).trim();
     if (!content || busy) return;
     const next = [...messages, { role: "user", content }];

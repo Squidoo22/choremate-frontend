@@ -12,7 +12,7 @@ export default function Gamification() {
 
   const [tasks, setTasks] = useState([]);
   const [debts, setDebts] = useState([]);
-  const badges = t("game.badges", { returnObjects: true });
+  const badges = t("game.badges", { returnObjects: true }) as any[];
 
   useEffect(() => {
     if (!householdId) return;
