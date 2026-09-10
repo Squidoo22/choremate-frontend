@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   // preflight вимкнено, щоб не скидати легасі-CSS з index.css
   corePlugins: { preflight: false },
   // important:#root — утиліти перемагають легасі .app-shell правила без !important
